@@ -12,11 +12,10 @@ import {
   ChevronRight,
   X,
   Send,
-  CheckCircle,
-  Clock,
 } from "lucide-react";
 import "./App.css";
 
+// --- Firebase Configuration ---
 import { db } from "./firebase";
 import {
   collection,
@@ -28,18 +27,32 @@ import {
   orderBy,
 } from "firebase/firestore";
 
+/**
+ * [Notice Component]
+ * - 일반 사용자: 문의글 작성 (Create) 및 조회 (Read)
+ * - 관리자: 문의글에 대한 답변 작성 (Update)
+ * - 특징: Firestore 실시간 리스너(onSnapshot)를 사용하여 데이터 동기화
+ */
 const Notice = () => {
+  // --- State Management ---
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedNotice, setSelectedNotice] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedNotice, setSelectedNotice] = useState(null); // 모달 활성화 여부
+  const [isAdmin, setIsAdmin] = useState(false); // 관리자/사용자 모드 토글
 
-  const [notices, setNotices] = useState([]);
+  const [notices, setNotices] = useState([]); // 게시글 리스트
+
+  // 입력 폼 상태 (작성용)
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
+
+  // 답변 폼 상태 (관리자용)
   const [replyContent, setReplyContent] = useState("");
 
+  // --- Effects ---
+  // 컴포넌트 마운트 시 Firestore 'notices' 컬렉션 실시간 구독
   useEffect(() => {
     const q = query(collection(db, "notices"), orderBy("createdAt", "desc"));
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const loadedNotices = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -47,11 +60,16 @@ const Notice = () => {
       }));
       setNotices(loadedNotices);
     });
-    return () => unsubscribe();
+
+    return () => unsubscribe(); // 클린업: 언마운트 시 구독 해제
   }, []);
 
+  // 검색어 필터링
   const filteredNotices = notices.filter((n) => n.title.includes(searchTerm));
 
+  // --- Handlers ---
+
+  // 사용자: 신규 문의 등록
   const addNotice = async () => {
     if (!newTitle || !newContent) return alert("제목과 내용을 모두 입력해라.");
     try {
@@ -61,7 +79,7 @@ const Notice = () => {
         author: "익명 빌런",
         date: new Date().toISOString().split("T")[0],
         createdAt: new Date(),
-        reply: "",
+        reply: "", // 초기 답변은 비어있음
         isAnswered: false,
       });
       alert("문의 접수 완료. 대기해라.");
@@ -72,6 +90,7 @@ const Notice = () => {
     }
   };
 
+  // 관리자: 답변 등록 (기존 문서 Update)
   const handleReplySubmit = async () => {
     if (!replyContent) return alert("답변 내용을 입력해라.");
     if (!selectedNotice) return;
@@ -86,7 +105,7 @@ const Notice = () => {
 
       alert("답변 등록 완료.");
       setReplyContent("");
-      setSelectedNotice(null);
+      setSelectedNotice(null); // 답변 완료 후 모달 닫기
     } catch (error) {
       console.error("답변 에러:", error);
       alert("답변 등록 실패.");
@@ -95,6 +114,7 @@ const Notice = () => {
 
   return (
     <div className="fade-in notice-page">
+      {/* 1. Header Section: 타이틀 및 검색/모드 전환 */}
       <div className="page-header">
         <h2>🚨 절대 문의 사항</h2>
         <div className="header-actions">
@@ -117,6 +137,7 @@ const Notice = () => {
         </div>
       </div>
 
+      {/* 2. Form Section: 관리자가 아닐 때만 노출 */}
       {!isAdmin && (
         <div className="admin-form fade-in">
           <input
@@ -136,6 +157,7 @@ const Notice = () => {
         </div>
       )}
 
+      {/* 3. List Section: 문의글 목록 */}
       <div className="notice-list">
         {filteredNotices.length > 0 ? (
           filteredNotices.map((notice) => (
@@ -144,13 +166,15 @@ const Notice = () => {
               className="notice-item"
               onClick={() => {
                 setSelectedNotice(notice);
-                setReplyContent("");
+                setReplyContent(""); // 모달 열 때 입력창 초기화
               }}
             >
               <div className="notice-info">
                 <span className="notice-date">{notice.date}</span>
                 <h4 className="notice-title">
+                  {/* 말줄임표 처리된 제목 */}
                   <span className="text-truncate">{notice.title}</span>
+                  {/* 상태 뱃지 */}
                   {notice.isAnswered ? (
                     <span className="status-badge status-done">답변완료</span>
                   ) : (
@@ -167,13 +191,13 @@ const Notice = () => {
         )}
       </div>
 
+      {/* 4. Modal Section: 상세 보기 및 답변 작성 */}
       {selectedNotice && (
         <div className="modal-overlay" onClick={() => setSelectedNotice(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            {/* 모달 헤더 (닫기 버튼 포함) */}
             <div className="modal-header">
               <span className="notice-date">{selectedNotice.date}</span>
-
-              {/* 🔥 수정된 닫기 버튼 (원 -> 직사각형 버튼) */}
               <button
                 className="modal-close-btn"
                 onClick={() => setSelectedNotice(null)}
@@ -182,9 +206,9 @@ const Notice = () => {
               </button>
             </div>
 
+            {/* 문의 내용 영역 */}
             <h3>{selectedNotice.title}</h3>
             <p className="modal-author">작성자: {selectedNotice.author}</p>
-
             <div
               className="modal-body"
               style={{
@@ -197,11 +221,13 @@ const Notice = () => {
               {selectedNotice.content}
             </div>
 
+            {/* 답변 영역 (조건부 렌더링) */}
             <div className="reply-section">
               <h4 style={{ color: "#a855f7", marginBottom: "10px" }}>
                 {isAdmin ? "💬 관리자 답변 작성" : "💬 운영진 답변"}
               </h4>
 
+              {/* Case A: 답변이 완료된 경우 */}
               {selectedNotice.isAnswered ? (
                 <div
                   style={{
@@ -225,6 +251,7 @@ const Notice = () => {
                   </div>
                 </div>
               ) : isAdmin ? (
+                /* Case B: 답변이 없고 관리자인 경우 (입력 폼) */
                 <div
                   style={{
                     display: "flex",
@@ -263,6 +290,7 @@ const Notice = () => {
                   </button>
                 </div>
               ) : (
+                /* Case C: 답변이 없고 사용자인 경우 (대기 메시지) */
                 <div style={{ color: "#666", fontStyle: "italic" }}>
                   아직 운영진이 확인 중이다. 잠시만 기다려라...
                 </div>
@@ -275,6 +303,7 @@ const Notice = () => {
   );
 };
 
+// --- Main Dashboard Component ---
 const MainHome = () => (
   <div className="fade-in">
     <div className="main-header">
@@ -283,6 +312,7 @@ const MainHome = () => (
         <span className="online-dot"></span> 8명의 빌런이 현재 작당 모의 중...
       </p>
     </div>
+    {/* Dashboard Widgets */}
     <div className="card-grid">
       <div className="stat-card">
         <div className="card-header">
@@ -330,10 +360,12 @@ const MainHome = () => (
   </div>
 );
 
+// --- App Shell (Router & Layout) ---
 function App() {
   return (
     <Router>
       <div className="villain-container">
+        {/* Sidebar Navigation */}
         <nav className="sidebar">
           <h1 className="logo">VC</h1>
           <Link to="/">
@@ -349,6 +381,7 @@ function App() {
             <Users /> 디스코드
           </a>
         </nav>
+        {/* Main Content Area */}
         <main className="content">
           <Routes>
             <Route path="/" element={<MainHome />} />

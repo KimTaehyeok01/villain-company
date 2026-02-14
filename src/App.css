@@ -1,3 +1,6 @@
+/* =========================================
+   Global Variables & Reset
+   ========================================= */
 :root {
   --bg-color: #0a0a0c;
   --point-color: #a855f7;
@@ -12,12 +15,16 @@ body {
   overflow-x: hidden;
 }
 
+/* =========================================
+   Layout Structure (Sidebar + Content)
+   ========================================= */
 .villain-container {
   display: flex;
   height: 100vh;
   width: 100vw;
 }
 
+/* Sidebar Styles */
 .sidebar {
   width: 200px;
   background: #111113;
@@ -54,6 +61,7 @@ body {
   transform: translateX(5px);
 }
 
+/* Main Content Area */
 .content {
   flex: 1;
   padding: 60px 40px;
@@ -64,12 +72,16 @@ body {
   background: radial-gradient(circle at top right, #161122 0%, #0a0a0c 40%);
 }
 
+/* Utility: Fade Animation */
 .fade-in {
   animation: fadeIn 0.5s ease-out;
   width: 100%;
   max-width: 850px;
 }
 
+/* =========================================
+   Components: Header & Controls
+   ========================================= */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -85,6 +97,7 @@ body {
   gap: 12px;
 }
 
+/* Search Bar Input */
 .search-bar {
   display: flex;
   align-items: center;
@@ -111,6 +124,7 @@ body {
   font-size: 0.95rem;
 }
 
+/* Mode Toggle Button */
 .admin-btn {
   background: #1f1f23;
   color: #aaa;
@@ -128,6 +142,9 @@ body {
   border-color: var(--point-color);
 }
 
+/* =========================================
+   Components: Notice Form & List
+   ========================================= */
 .admin-form {
   background: #18181b;
   padding: 25px;
@@ -176,6 +193,7 @@ body {
   transform: translateY(-2px);
 }
 
+/* List Item Styles */
 .notice-list {
   display: flex;
   flex-direction: column;
@@ -223,12 +241,19 @@ body {
   font-size: 1.2rem;
   color: var(--text-color);
   letter-spacing: -0.5px;
-
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+.notice-author {
+  font-size: 0.9rem;
+  color: var(--point-color);
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+/* Utility: Text Truncation (...) */
 .text-truncate {
   white-space: nowrap;
   overflow: hidden;
@@ -236,6 +261,7 @@ body {
   display: block;
 }
 
+/* Status Badges */
 .status-badge {
   font-size: 0.7rem;
   padding: 3px 8px;
@@ -254,13 +280,9 @@ body {
   color: #888;
 }
 
-.notice-author {
-  font-size: 0.9rem;
-  color: var(--point-color);
-  opacity: 0.8;
-  font-weight: 500;
-}
-
+/* =========================================
+   Components: Modal System
+   ========================================= */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -299,7 +321,6 @@ body {
   flex-shrink: 0;
 }
 
-/* 🔥 새로 추가된 닫기 버튼 스타일 */
 .modal-close-btn {
   background: transparent;
   border: 1px solid #444;
@@ -331,6 +352,7 @@ body {
   flex-shrink: 0;
 }
 
+/* Modal Body with Custom Scrollbar */
 .modal-body {
   line-height: 1.8;
   color: #ccc;
@@ -365,6 +387,9 @@ body {
   }
 }
 
+/* =========================================
+   Dashboard Widgets
+   ========================================= */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
