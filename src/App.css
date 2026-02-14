@@ -16,7 +16,7 @@ body {
 }
 
 /* =========================================
-   Layout Structure (Sidebar + Content)
+   Layout Structure
    ========================================= */
 .villain-container {
   display: flex;
@@ -24,7 +24,7 @@ body {
   width: 100vw;
 }
 
-/* Sidebar Styles */
+/* Sidebar Navigation */
 .sidebar {
   width: 200px;
   background: #111113;
@@ -72,7 +72,6 @@ body {
   background: radial-gradient(circle at top right, #161122 0%, #0a0a0c 40%);
 }
 
-/* Utility: Fade Animation */
 .fade-in {
   animation: fadeIn 0.5s ease-out;
   width: 100%;
@@ -97,7 +96,6 @@ body {
   gap: 12px;
 }
 
-/* Search Bar Input */
 .search-bar {
   display: flex;
   align-items: center;
@@ -124,7 +122,6 @@ body {
   font-size: 0.95rem;
 }
 
-/* Mode Toggle Button */
 .admin-btn {
   background: #1f1f23;
   color: #aaa;
@@ -143,7 +140,7 @@ body {
 }
 
 /* =========================================
-   Components: Notice Form & List
+   Components: Form & List
    ========================================= */
 .admin-form {
   background: #18181b;
@@ -193,7 +190,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* List Item Styles */
 .notice-list {
   display: flex;
   flex-direction: column;
@@ -246,14 +242,6 @@ body {
   gap: 10px;
 }
 
-.notice-author {
-  font-size: 0.9rem;
-  color: var(--point-color);
-  opacity: 0.8;
-  font-weight: 500;
-}
-
-/* Utility: Text Truncation (...) */
 .text-truncate {
   white-space: nowrap;
   overflow: hidden;
@@ -261,7 +249,6 @@ body {
   display: block;
 }
 
-/* Status Badges */
 .status-badge {
   font-size: 0.7rem;
   padding: 3px 8px;
@@ -278,6 +265,13 @@ body {
 .status-wait {
   background: #333;
   color: #888;
+}
+
+.notice-author {
+  font-size: 0.9rem;
+  color: var(--point-color);
+  opacity: 0.8;
+  font-weight: 500;
 }
 
 /* =========================================
@@ -352,7 +346,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Modal Body with Custom Scrollbar */
 .modal-body {
   line-height: 1.8;
   color: #ccc;
@@ -388,7 +381,7 @@ body {
 }
 
 /* =========================================
-   Dashboard Widgets
+   Dashboard Widgets & Animations
    ========================================= */
 .card-grid {
   display: grid;
@@ -413,5 +406,64 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .villain-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    padding: 15px 20px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-right: none;
+    border-bottom: 1px solid #222;
+    z-index: 100;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+  }
+
+  .sidebar a {
+    font-size: 0;
+    gap: 0;
+  }
+
+  .sidebar a svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  .modal-content {
+    width: 90%;
+    max-height: 85vh;
+    padding: 25px;
   }
 }
