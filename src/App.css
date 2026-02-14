@@ -1,0 +1,341 @@
+:root {
+  --bg-color: #0a0a0c;
+  --point-color: #a855f7;
+  --text-color: #e2e8f0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  font-family: "Pretendard", sans-serif;
+  overflow-x: hidden;
+}
+
+.villain-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* --- 사이드바 --- */
+.sidebar {
+  width: 200px;
+  background: #111113;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  border-right: 1px solid #222;
+  flex-shrink: 0;
+}
+
+.logo {
+  color: var(--point-color);
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-shadow: 0 0 15px var(--point-color);
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.sidebar a {
+  color: #888;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: 0.3s;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.sidebar a:hover {
+  color: var(--point-color);
+  transform: translateX(5px);
+}
+
+/* --- 메인 콘텐츠 영역 (중앙 정렬 핵심) --- */
+.content {
+  flex: 1;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 가로 중앙 정렬 */
+  overflow-y: auto;
+  background: radial-gradient(circle at top right, #161122 0%, #0a0a0c 40%);
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+  width: 100%;
+  max-width: 850px; /* 너무 퍼지지 않게 너비 제한 */
+}
+
+/* --- 헤더 및 검색창 --- */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #18181b;
+  padding: 10px 18px;
+  border-radius: 25px;
+  border: 1px solid #333;
+  width: 300px;
+  transition: 0.3s;
+}
+
+.search-bar:focus-within {
+  border-color: var(--point-color);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+}
+
+.search-bar input {
+  background: transparent;
+  border: none;
+  color: white;
+  margin-left: 12px;
+  outline: none;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.admin-btn {
+  background: #1f1f23;
+  color: #aaa;
+  border: 1px solid #333;
+  padding: 6px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 0.85rem;
+}
+
+.admin-btn:hover {
+  background: var(--point-color);
+  color: white;
+  border-color: var(--point-color);
+}
+
+/* --- 관리자 작성 폼 --- */
+.admin-form {
+  background: #18181b;
+  padding: 25px;
+  border-radius: 15px;
+  border: 1px solid var(--point-color);
+  margin-bottom: 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
+}
+
+.admin-form input,
+.admin-form textarea {
+  background: #0d0d0f;
+  border: 1px solid #333;
+  color: white;
+  padding: 14px;
+  border-radius: 10px;
+  outline: none;
+  font-family: inherit;
+}
+
+.admin-form textarea {
+  height: 120px;
+  resize: none;
+}
+
+.admin-form button {
+  background: var(--point-color);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.admin-form button:hover {
+  filter: brightness(1.2);
+  transform: translateY(-2px);
+}
+
+/* --- 공지 리스트 --- */
+.notice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.notice-item {
+  background: #18181b;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #28282c;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.notice-item:hover {
+  background: #1e1e22;
+  transform: scale(1.02);
+  border-color: var(--point-color);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.notice-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notice-date {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.notice-title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  letter-spacing: -0.5px;
+}
+
+.notice-author {
+  font-size: 0.9rem;
+  color: var(--point-color);
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+/* --- 모달 (팝업) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #18181b;
+  width: 100%;
+  max-width: 650px;
+  padding: 40px;
+  border-radius: 24px;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  box-shadow: 0 0 50px rgba(168, 85, 247, 0.2);
+  position: relative;
+  animation: modalUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.modal-header button {
+  background: #222;
+  border: none;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+}
+
+.modal-header button:hover {
+  background: #ff4444;
+}
+
+.modal-author {
+  color: var(--point-color);
+  margin-bottom: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #333;
+}
+
+.modal-body {
+  line-height: 1.8;
+  color: #ccc;
+  font-size: 1.1rem;
+  white-space: pre-wrap;
+}
+
+/* --- 메인 홈 카드 섹션 --- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  width: 100%;
+}
+
+.stat-card {
+  background: #18181b;
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid #28282c;
+  transition: 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
