@@ -18,7 +18,6 @@ body {
   width: 100vw;
 }
 
-/* --- 사이드바 --- */
 .sidebar {
   width: 200px;
   background: #111113;
@@ -55,13 +54,12 @@ body {
   transform: translateX(5px);
 }
 
-/* --- 메인 콘텐츠 영역 (중앙 정렬 핵심) --- */
 .content {
   flex: 1;
   padding: 60px 40px;
   display: flex;
   flex-direction: column;
-  align-items: center; /* 가로 중앙 정렬 */
+  align-items: center;
   overflow-y: auto;
   background: radial-gradient(circle at top right, #161122 0%, #0a0a0c 40%);
 }
@@ -69,10 +67,9 @@ body {
 .fade-in {
   animation: fadeIn 0.5s ease-out;
   width: 100%;
-  max-width: 850px; /* 너무 퍼지지 않게 너비 제한 */
+  max-width: 850px;
 }
 
-/* --- 헤더 및 검색창 --- */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -131,7 +128,6 @@ body {
   border-color: var(--point-color);
 }
 
-/* --- 관리자 작성 폼 --- */
 .admin-form {
   background: #18181b;
   padding: 25px;
@@ -180,7 +176,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* --- 공지 리스트 --- */
 .notice-list {
   display: flex;
   flex-direction: column;
@@ -198,6 +193,7 @@ body {
   align-items: center;
   cursor: pointer;
   transition: 0.3s;
+  overflow: hidden;
 }
 
 .notice-item:hover {
@@ -211,6 +207,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1;
+  min-width: 0;
+  margin-right: 15px;
 }
 
 .notice-date {
@@ -224,6 +223,35 @@ body {
   font-size: 1.2rem;
   color: var(--text-color);
   letter-spacing: -0.5px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.status-badge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.status-done {
+  background: #a855f7;
+  color: white;
+}
+
+.status-wait {
+  background: #333;
+  color: #888;
 }
 
 .notice-author {
@@ -233,7 +261,6 @@ body {
   font-weight: 500;
 }
 
-/* --- 모달 (팝업) --- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -253,12 +280,78 @@ body {
   background: #18181b;
   width: 100%;
   max-width: 650px;
+  max-height: 80vh;
   padding: 40px;
   border-radius: 24px;
   border: 1px solid rgba(168, 85, 247, 0.4);
   box-shadow: 0 0 50px rgba(168, 85, 247, 0.2);
   position: relative;
+  display: flex;
+  flex-direction: column;
   animation: modalUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-shrink: 0;
+}
+
+/* 🔥 새로 추가된 닫기 버튼 스타일 */
+.modal-close-btn {
+  background: transparent;
+  border: 1px solid #444;
+  color: #888;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.modal-close-btn:hover {
+  background: #333;
+  color: white;
+  border-color: white;
+}
+
+.modal-author {
+  color: var(--point-color);
+  margin-bottom: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.modal-body {
+  line-height: 1.8;
+  color: #ccc;
+  font-size: 1.1rem;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  padding-right: 10px;
+  flex: 1;
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--point-color);
 }
 
 @keyframes modalUp {
@@ -272,48 +365,6 @@ body {
   }
 }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-}
-
-.modal-header button {
-  background: #222;
-  border: none;
-  color: #fff;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.3s;
-}
-
-.modal-header button:hover {
-  background: #ff4444;
-}
-
-.modal-author {
-  color: var(--point-color);
-  margin-bottom: 25px;
-  font-size: 1rem;
-  font-weight: 600;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #333;
-}
-
-.modal-body {
-  line-height: 1.8;
-  color: #ccc;
-  font-size: 1.1rem;
-  white-space: pre-wrap;
-}
-
-/* --- 메인 홈 카드 섹션 --- */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

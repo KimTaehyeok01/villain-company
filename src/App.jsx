@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import {
   Home,
@@ -11,132 +11,263 @@ import {
   Search,
   ChevronRight,
   X,
-  PlusCircle,
   Send,
+  CheckCircle,
+  Clock,
 } from "lucide-react";
 import "./App.css";
 
-// 1. 절대 공지 컴포넌트
+import { db } from "./firebase";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
+
 const Notice = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedNotice, setSelectedNotice] = useState(null); // 클릭한 공지 저장
-  const [isAdmin, setIsAdmin] = useState(false); // 관리자 모드 여부
-  const [notices, setNotices] = useState([
-    {
-      id: 1,
-      title: "작전 코드: 네온 쉐도우 발동",
-      date: "2026-02-14",
-      author: "대장 빌런",
-      content:
-        "모든 빌런은 각자의 위치에서 대기하라. 네온 쉐도우 작전은 오늘 자정부터 시작된다.",
-    },
-    {
-      id: 2,
-      title: "디스코드 보안 채널 변경 안내",
-      date: "2026-02-12",
-      author: "보안 담당",
-      content:
-        "기존 음성 채널이 아닌 암호화된 전용 채널로만 접속하라. 링크는 디스코드 공지를 확인하라.",
-    },
-  ]);
+  const [selectedNotice, setSelectedNotice] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  // 글쓰기 입력 상태
+  const [notices, setNotices] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
+  const [replyContent, setReplyContent] = useState("");
+
+  useEffect(() => {
+    const q = query(collection(db, "notices"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const loadedNotices = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setNotices(loadedNotices);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const filteredNotices = notices.filter((n) => n.title.includes(searchTerm));
 
-  // 공지사항 작성 함수
-  const addNotice = () => {
+  const addNotice = async () => {
     if (!newTitle || !newContent) return alert("제목과 내용을 모두 입력해라.");
-    const newEntry = {
-      id: notices.length + 1,
-      title: newTitle,
-      date: new Date().toISOString().split("T")[0],
-      author: "운영진",
-      content: newContent,
-    };
-    setNotices([newEntry, ...notices]);
-    setNewTitle("");
-    setNewContent("");
-    setIsAdmin(false);
+    try {
+      await addDoc(collection(db, "notices"), {
+        title: newTitle,
+        content: newContent,
+        author: "익명 빌런",
+        date: new Date().toISOString().split("T")[0],
+        createdAt: new Date(),
+        reply: "",
+        isAnswered: false,
+      });
+      alert("문의 접수 완료. 대기해라.");
+      setNewTitle("");
+      setNewContent("");
+    } catch (error) {
+      console.error("에러:", error);
+    }
+  };
+
+  const handleReplySubmit = async () => {
+    if (!replyContent) return alert("답변 내용을 입력해라.");
+    if (!selectedNotice) return;
+
+    try {
+      const noticeRef = doc(db, "notices", selectedNotice.id);
+      await updateDoc(noticeRef, {
+        reply: replyContent,
+        replyDate: new Date().toISOString().split("T")[0],
+        isAnswered: true,
+      });
+
+      alert("답변 등록 완료.");
+      setReplyContent("");
+      setSelectedNotice(null);
+    } catch (error) {
+      console.error("답변 에러:", error);
+      alert("답변 등록 실패.");
+    }
   };
 
   return (
     <div className="fade-in notice-page">
       <div className="page-header">
-        <h2>🚨 절대 공지 사항</h2>
+        <h2>🚨 절대 문의 사항</h2>
         <div className="header-actions">
           <div className="search-bar">
             <Search size={18} color="#888" />
             <input
               type="text"
-              placeholder="비밀 지령 검색..."
+              placeholder="문의 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="admin-btn" onClick={() => setIsAdmin(!isAdmin)}>
-            {isAdmin ? "닫기" : "공지 작성"}
+          <button
+            className="admin-btn"
+            onClick={() => setIsAdmin(!isAdmin)}
+            style={{ borderColor: isAdmin ? "#a855f7" : "#333" }}
+          >
+            {isAdmin ? "관리자 모드 ON" : "사용자 모드"}
           </button>
         </div>
       </div>
 
-      {/* 관리자 공지 작성 폼 */}
-      {isAdmin && (
+      {!isAdmin && (
         <div className="admin-form fade-in">
           <input
             type="text"
-            placeholder="작전 제목..."
+            placeholder="문의 제목..."
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
           />
           <textarea
-            placeholder="하달할 상세 지령..."
+            placeholder="운영진에게 보낼 내용..."
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}
           />
           <button onClick={addNotice}>
-            <Send size={16} /> 지령 발령
+            <Send size={16} /> 문의 전송
           </button>
         </div>
       )}
 
-      {/* 하단 공지 리스트 */}
       <div className="notice-list">
         {filteredNotices.length > 0 ? (
           filteredNotices.map((notice) => (
             <div
               key={notice.id}
               className="notice-item"
-              onClick={() => setSelectedNotice(notice)}
+              onClick={() => {
+                setSelectedNotice(notice);
+                setReplyContent("");
+              }}
             >
               <div className="notice-info">
                 <span className="notice-date">{notice.date}</span>
-                <h4 className="notice-title">{notice.title}</h4>
+                <h4 className="notice-title">
+                  <span className="text-truncate">{notice.title}</span>
+                  {notice.isAnswered ? (
+                    <span className="status-badge status-done">답변완료</span>
+                  ) : (
+                    <span className="status-badge status-wait">처리중</span>
+                  )}
+                </h4>
                 <span className="notice-author">By. {notice.author}</span>
               </div>
               <ChevronRight size={20} color="#a855f7" className="arrow" />
             </div>
           ))
         ) : (
-          <p className="no-result">검색 결과가 없다. 정보를 다시 확인해라.</p>
+          <p className="no-result">데이터 수신 중이거나 문의가 없다.</p>
         )}
       </div>
 
-      {/* 공지 상세 보기 모달 */}
       {selectedNotice && (
         <div className="modal-overlay" onClick={() => setSelectedNotice(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <span className="notice-date">{selectedNotice.date}</span>
-              <button onClick={() => setSelectedNotice(null)}>
-                <X size={24} />
+
+              {/* 🔥 수정된 닫기 버튼 (원 -> 직사각형 버튼) */}
+              <button
+                className="modal-close-btn"
+                onClick={() => setSelectedNotice(null)}
+              >
+                닫기 <X size={16} />
               </button>
             </div>
+
             <h3>{selectedNotice.title}</h3>
             <p className="modal-author">작성자: {selectedNotice.author}</p>
-            <div className="modal-body">{selectedNotice.content}</div>
+
+            <div
+              className="modal-body"
+              style={{
+                minHeight: "100px",
+                borderBottom: "1px solid #333",
+                paddingBottom: "20px",
+                marginBottom: "20px",
+              }}
+            >
+              {selectedNotice.content}
+            </div>
+
+            <div className="reply-section">
+              <h4 style={{ color: "#a855f7", marginBottom: "10px" }}>
+                {isAdmin ? "💬 관리자 답변 작성" : "💬 운영진 답변"}
+              </h4>
+
+              {selectedNotice.isAnswered ? (
+                <div
+                  style={{
+                    background: "#222",
+                    padding: "15px",
+                    borderRadius: "10px",
+                    color: "#e2e8f0",
+                    lineHeight: "1.6",
+                  }}
+                >
+                  {selectedNotice.reply}
+                  <div
+                    style={{
+                      marginTop: "10px",
+                      fontSize: "0.8rem",
+                      color: "#666",
+                      textAlign: "right",
+                    }}
+                  >
+                    Answered at {selectedNotice.replyDate}
+                  </div>
+                </div>
+              ) : isAdmin ? (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
+                >
+                  <textarea
+                    value={replyContent}
+                    onChange={(e) => setReplyContent(e.target.value)}
+                    placeholder="여기에 답변을 입력해라..."
+                    style={{
+                      width: "100%",
+                      height: "100px",
+                      background: "#111",
+                      border: "1px solid #333",
+                      color: "white",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      resize: "none",
+                    }}
+                  />
+                  <button
+                    onClick={handleReplySubmit}
+                    style={{
+                      background: "#a855f7",
+                      color: "white",
+                      border: "none",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    답변 등록
+                  </button>
+                </div>
+              ) : (
+                <div style={{ color: "#666", fontStyle: "italic" }}>
+                  아직 운영진이 확인 중이다. 잠시만 기다려라...
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -144,7 +275,6 @@ const Notice = () => {
   );
 };
 
-// 메인 홈 컴포넌트
 const MainHome = () => (
   <div className="fade-in">
     <div className="main-header">
@@ -153,7 +283,6 @@ const MainHome = () => (
         <span className="online-dot"></span> 8명의 빌런이 현재 작당 모의 중...
       </p>
     </div>
-
     <div className="card-grid">
       <div className="stat-card">
         <div className="card-header">
@@ -173,7 +302,6 @@ const MainHome = () => (
           </div>
         </div>
       </div>
-
       <div className="stat-card">
         <div className="card-header">
           <Target size={20} color="#a855f7" />
@@ -188,7 +316,6 @@ const MainHome = () => (
           </li>
         </ul>
       </div>
-
       <div className="stat-card">
         <div className="card-header">
           <ShieldAlert size={20} color="#ff4444" />
@@ -213,7 +340,7 @@ function App() {
             <Home /> 아지트
           </Link>
           <Link to="/notice">
-            <Megaphone /> 절대 공지
+            <Megaphone /> 절대 문의
           </Link>
           <Link to="/board">
             <MessageSquare /> 비밀 게시판
