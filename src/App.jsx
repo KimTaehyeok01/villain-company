@@ -483,6 +483,7 @@ const MainHome = ({ userData, setUserData }) => {
   const handleReport = async () => {
     if (isCheckedIn)
       return alert("오늘은 이미 생존 인증을 마쳤다. 내일 다시 보고해라.");
+
     try {
       const userRef = doc(db, "users", userData.uid);
       await updateDoc(userRef, { lastCheckIn: todayStr });
@@ -579,7 +580,7 @@ const MainHome = ({ userData, setUserData }) => {
 };
 
 /* =========================================
-   [NEW] 비밀 게시판 (SecretBoard) - 기능 업그레이드
+   [5] 비밀 게시판 (SecretBoard)
    ========================================= */
 const SecretBoard = ({ userData }) => {
   const [rooms, setRooms] = useState([]);
@@ -587,13 +588,10 @@ const SecretBoard = ({ userData }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
-
-  // 방 생성 관련 상태
   const [newRoomName, setNewRoomName] = useState("");
   const [newMaxPeople, setNewMaxPeople] = useState(10);
   const [newIsPrivate, setNewIsPrivate] = useState(false);
   const [newRoomPassword, setNewRoomPassword] = useState("");
-
   const scrollRef = useRef();
 
   useEffect(() => {
@@ -623,16 +621,14 @@ const SecretBoard = ({ userData }) => {
   const createRoom = async () => {
     if (!newRoomName.trim()) return alert("방 이름을 입력해라.");
     if (newIsPrivate && !newRoomPassword) return alert("비밀번호를 설정해라.");
-
     await addDoc(collection(db, "chatRooms"), {
       name: newRoomName,
       maxParticipants: Number(newMaxPeople),
       isPrivate: newIsPrivate,
-      password: newRoomPassword, // 실제 서비스에선 암호화 권장 (학습용이라 평문 저장)
-      createdBy: userData.uid, // 만든 사람 ID 저장
+      password: newRoomPassword,
+      createdBy: userData.uid,
       createdAt: new Date().toISOString(),
     });
-
     setNewRoomName("");
     setNewMaxPeople(10);
     setNewIsPrivate(false);
@@ -653,15 +649,36 @@ const SecretBoard = ({ userData }) => {
     }
   };
 
-  const handleDeleteRoom = async (e, roomId) => {
+  // ★ 수정된 방 삭제 로직 ★
+  const handleDeleteRoom = async (e, room) => {
     e.stopPropagation(); // 부모 클릭 방지
-    if (window.confirm("이 작전 방을 폭파하겠나? 복구 불가능하다.")) {
-      try {
-        await deleteDoc(doc(db, "chatRooms", roomId));
-        alert("방이 제거되었다.");
-      } catch (error) {
-        alert("삭제 중 오류 발생.");
+
+    // 1. 비공개 방 (비밀번호 있음)
+    if (room.isPrivate) {
+      const inputPwd = prompt(
+        "🔒 이 방은 잠겨있다. 삭제하려면 비밀번호를 입력해라.",
+      );
+      if (inputPwd === null) return; // 취소 누름
+
+      if (inputPwd !== room.password) {
+        return alert("비밀번호가 틀렸다. 삭제 불가.");
       }
+      // 비밀번호 맞으면 아래 삭제 로직 진행
+    }
+    // 2. 공개 방 (비밀번호 없음) - 단순 확인
+    else {
+      if (!window.confirm("이 작전 방을 폭파하겠나? 복구 불가능하다.")) {
+        return;
+      }
+    }
+
+    // 실제 삭제 실행
+    try {
+      await deleteDoc(doc(db, "chatRooms", room.id));
+      alert("방이 제거되었다.");
+    } catch (error) {
+      console.error("삭제 실패:", error);
+      alert("삭제 중 오류 발생.");
     }
   };
 
@@ -689,7 +706,6 @@ const SecretBoard = ({ userData }) => {
             <Plus size={18} /> {isCreatingRoom ? "취소" : "방 만들기"}
           </button>
         </div>
-
         {isCreatingRoom && (
           <div className="room-creator fade-in">
             <div className="creator-row">
@@ -734,7 +750,6 @@ const SecretBoard = ({ userData }) => {
             </button>
           </div>
         )}
-
         <div className="room-list">
           {rooms.length > 0 ? (
             rooms.map((room) => (
@@ -761,13 +776,12 @@ const SecretBoard = ({ userData }) => {
                     )}
                   </div>
                 </div>
-
-                {/* 방장(createdBy)이거나 관리자(admin)일 때만 삭제 버튼 표시 */}
+                {/* ★ 삭제 버튼: room 전체 객체를 넘기도록 수정됨 ★ */}
                 {(room.createdBy === userData.uid ||
                   userData.role === "admin") && (
                   <button
                     className="room-delete-btn"
-                    onClick={(e) => handleDeleteRoom(e, room.id)}
+                    onClick={(e) => handleDeleteRoom(e, room)}
                   >
                     <Trash2 size={18} />
                   </button>
@@ -825,7 +839,7 @@ const SecretBoard = ({ userData }) => {
 };
 
 /* =========================================
-   [5] App Shell
+   [6] App Shell
    ========================================= */
 function App() {
   const [userData, setUserData] = useState(null);
@@ -876,7 +890,7 @@ function App() {
                   <h1 className="logo">VC</h1>
                   <div className="user-info">
                     <div className="user-name">
-                      {userData.name}{" "}
+                      {userData.name}
                       {isCheckedIn && (
                         <span className="checkin-badge">
                           <CheckCircle size={12} /> 활동 중
