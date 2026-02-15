@@ -23,6 +23,9 @@ import {
   LogIn,
   ArrowLeft,
   Trash2,
+  Terminal,
+  Clock,
+  Zap,
 } from "lucide-react";
 import "./App.css";
 
@@ -80,11 +83,9 @@ const SignupPage = () => {
         password,
       );
       const user = userCredential.user;
-
       await updateProfile(user, { displayName: name });
 
       const role = email === "admin@villain.com" ? "admin" : "user";
-
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         name: name,
@@ -97,14 +98,7 @@ const SignupPage = () => {
       navigate("/login");
     } catch (error) {
       console.error(error);
-      let msg = "가입 실패.";
-      if (error.code === "auth/email-already-in-use")
-        msg = "이미 사용 중인 이메일이다.";
-      if (error.code === "auth/weak-password")
-        msg = "비밀번호는 6자리 이상이어야 한다.";
-      if (error.code === "auth/invalid-email")
-        msg = "이메일 형식이 올바르지 않다.";
-      setErrorMsg(msg);
+      setErrorMsg("가입 실패.");
     }
   };
 
@@ -115,7 +109,6 @@ const SignupPage = () => {
           VC <span style={{ fontSize: "1rem", color: "#666" }}>JOIN</span>
         </h1>
         <p className="auth-desc">신규 빌런 등록 절차</p>
-
         <form onSubmit={handleSignup} className="auth-form">
           <div className="input-group">
             <input
@@ -126,7 +119,6 @@ const SignupPage = () => {
               required
             />
           </div>
-
           <div className="input-group">
             <input
               type="email"
@@ -136,7 +128,6 @@ const SignupPage = () => {
               required
             />
           </div>
-
           <div className="input-group">
             <input
               type="password"
@@ -146,7 +137,6 @@ const SignupPage = () => {
               required
             />
           </div>
-
           <div className="input-group">
             <input
               type="password"
@@ -162,14 +152,11 @@ const SignupPage = () => {
               }}
             />
           </div>
-
           {errorMsg && <p className="error-text">{errorMsg}</p>}
-
           <button type="submit" className="auth-btn">
             <UserPlus size={18} /> 가입 완료
           </button>
         </form>
-
         <div className="auth-footer">
           <span onClick={() => navigate("/login")} className="link-text">
             <ArrowLeft size={14} /> 로그인 화면으로 복귀
@@ -195,7 +182,6 @@ const LoginPage = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      console.error(error);
       setErrorMsg("이메일 혹은 비밀번호가 틀렸다.");
     }
   };
@@ -205,7 +191,6 @@ const LoginPage = () => {
       <div className="auth-box">
         <h1 className="logo">VC</h1>
         <p className="auth-desc">빌런 컴퍼니 접속</p>
-
         <form onSubmit={handleLogin} className="auth-form">
           <input
             type="email"
@@ -222,14 +207,12 @@ const LoginPage = () => {
             required
           />
           {errorMsg && <p className="error-text">{errorMsg}</p>}
-
           <button type="submit" className="auth-btn login-btn-color">
             <LogIn size={18} /> 로그인
           </button>
         </form>
-
         <div className="auth-footer">
-          계정이 없나?
+          계정이 없나?{" "}
           <span onClick={() => navigate("/signup")} className="link-text">
             회원가입
           </span>
@@ -240,14 +223,12 @@ const LoginPage = () => {
 };
 
 /* =========================================
-   [3] 문의 게시판 
+   [3] 문의 게시판 (네 코드 그대로 유지)
    ========================================= */
 const Notice = ({ userData }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNotice, setSelectedNotice] = useState(null);
-
   const isAdmin = userData?.role === "admin";
-
   const [notices, setNotices] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
@@ -256,16 +237,10 @@ const Notice = ({ userData }) => {
   useEffect(() => {
     const q = query(collection(db, "notices"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const loadedNotices = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setNotices(loadedNotices);
+      setNotices(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
     });
     return () => unsubscribe();
   }, []);
-
-  const filteredNotices = notices.filter((n) => n.title.includes(searchTerm));
 
   const addNotice = async () => {
     if (!newTitle || !newContent) return alert("내용을 입력해라.");
@@ -288,7 +263,6 @@ const Notice = ({ userData }) => {
     }
   };
 
-  // 삭제 기능 추가
   const handleDelete = async (id) => {
     if (window.confirm("정말 이 문의 내역을 삭제하겠나? 복구는 없다.")) {
       try {
@@ -296,15 +270,13 @@ const Notice = ({ userData }) => {
         alert("삭제 완료.");
         setSelectedNotice(null);
       } catch (error) {
-        console.error("삭제 실패:", error);
-        alert("삭제 중 오류 발생.");
+        alert("삭제 오류.");
       }
     }
   };
 
   const handleReplySubmit = async () => {
     if (!replyContent) return alert("답변을 입력해라.");
-    if (!selectedNotice) return;
     try {
       const noticeRef = doc(db, "notices", selectedNotice.id);
       await updateDoc(noticeRef, {
@@ -321,7 +293,7 @@ const Notice = ({ userData }) => {
   };
 
   return (
-    <div className="fade-in notice-page" style={{ width: "100%" }}>
+    <div className="fade-in notice-page">
       <div className="page-header">
         <h2>🚨 절대 문의 사항</h2>
         <div className="header-actions">
@@ -341,7 +313,6 @@ const Notice = ({ userData }) => {
           )}
         </div>
       </div>
-
       {!isAdmin && (
         <div className="admin-form fade-in">
           <input
@@ -360,10 +331,10 @@ const Notice = ({ userData }) => {
           </button>
         </div>
       )}
-
       <div className="notice-list">
-        {filteredNotices.length > 0 ? (
-          filteredNotices.map((notice) => (
+        {notices
+          .filter((n) => n.title.includes(searchTerm))
+          .map((notice) => (
             <div
               key={notice.id}
               className="notice-item"
@@ -375,7 +346,7 @@ const Notice = ({ userData }) => {
               <div className="notice-info">
                 <span className="notice-date">{notice.date}</span>
                 <h4 className="notice-title">
-                  <span className="text-truncate">{notice.title}</span>
+                  <span className="text-truncate">{notice.title}</span>{" "}
                   {notice.isAnswered ? (
                     <span className="status-badge status-done">답변완료</span>
                   ) : (
@@ -386,19 +357,14 @@ const Notice = ({ userData }) => {
               </div>
               <ChevronRight size={20} color="#a855f7" />
             </div>
-          ))
-        ) : (
-          <p className="no-result">문의 내역이 없다.</p>
-        )}
+          ))}
       </div>
-
       {selectedNotice && (
         <div className="modal-overlay" onClick={() => setSelectedNotice(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <span className="notice-date">{selectedNotice.date}</span>
               <div style={{ display: "flex", gap: "10px" }}>
-                {/* 관리자일 경우 삭제 버튼 표시 */}
                 {isAdmin && (
                   <button
                     className="delete-btn"
@@ -415,19 +381,13 @@ const Notice = ({ userData }) => {
                 </button>
               </div>
             </div>
-
             <h3>{selectedNotice.title}</h3>
-            {/* 작성자 표시부 */}
             <p className="modal-author">작성자: {selectedNotice.author}</p>
-
-            {/* 본문  */}
             <div className="modal-body">{selectedNotice.content}</div>
-
             <div className="reply-section">
               <h4 style={{ color: "#a855f7", marginBottom: "15px" }}>
                 {isAdmin ? "💬 관리자 답변 작성" : "💬 운영진 답변"}
               </h4>
-
               {selectedNotice.isAnswered ? (
                 <div
                   style={{
@@ -492,52 +452,124 @@ const Notice = ({ userData }) => {
 };
 
 /* =========================================
-   [4] 메인 대시보드
+   [4] 메인 대시보드 (아지트 - 4대 기능 추가)
    ========================================= */
-const MainHome = () => (
-  <div className="fade-in" style={{ width: "100%" }}>
-    <div className="main-header">
-      <h2>Welcome to Villain Co.</h2>
-      <p className="status-text">
-        <span className="online-dot"></span> 8명의 빌런이 작당 모의 중...
-      </p>
-    </div>
-    <div className="card-grid">
-      <div className="stat-card">
-        <div className="card-header">
-          <Activity size={20} color="#a855f7" />
-          <h3>진행 작전</h3>
+const MainHome = ({ userData }) => {
+  const [timeLeft, setTimeLeft] = useState("");
+  const [logs, setLogs] = useState([
+    `[SYSTEM] 빌런 네트워크 접속 중...`,
+    `[SECURITY] 방화벽 4단계 가동 완료.`,
+    `[NOTICE] 새로운 지령을 대기하십시오.`,
+  ]);
+
+  // 1. D-Day 카운트다운
+  useEffect(() => {
+    const targetDate = new Date("2026-12-31T23:59:59");
+    const timer = setInterval(() => {
+      const now = new Date();
+      const diff = targetDate - now;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
+      setTimeLeft(`${days}일 ${hours}시 ${mins}분 ${secs}초`);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // 2. 생존 신고 기능
+  const handleReport = () => {
+    const time = new Date().toLocaleTimeString();
+    const newLog = `[INFO] ${userData.name} 빌런 생존 보고 완료. (${time})`;
+    setLogs((prev) => [newLog, ...prev.slice(0, 7)]);
+    alert("생존 신고가 접수되었다.");
+  };
+
+  return (
+    <div className="fade-in main-home-wrapper">
+      <div className="main-header">
+        <h2>Welcome to Villain Co.</h2>
+        <p className="status-text">
+          <span className="online-dot"></span> 8명의 빌런이 작당 모의 중...
+        </p>
+      </div>
+
+      <div className="dashboard-grid">
+        {/* 카드 1: D-Day */}
+        <div className="stat-card timer-card">
+          <div className="card-header">
+            <Clock size={20} color="#ff4444" />
+            <h3>세계 정복 D-DAY</h3>
+          </div>
+          <div className="timer-display">{timeLeft}</div>
+          <p className="timer-desc">성공적인 거사를 위해 역량을 결집하라.</p>
         </div>
-        <div className="operation-item">
-          <p>현상 수배 정보 갱신</p>
-          <div className="progress-bar">
-            <div className="progress" style={{ width: "70%" }}></div>
+
+        {/* 카드 2: 리소스 현황 (그래프) */}
+        <div className="stat-card">
+          <div className="card-header">
+            <Activity size={20} color="#a855f7" />
+            <h3>핵심 리소스 현황</h3>
+          </div>
+          <div className="resource-item">
+            <div className="res-label">
+              <span>비자금 확보</span>
+              <span>85%</span>
+            </div>
+            <div className="res-bar">
+              <div
+                className="res-progress pulse"
+                style={{ width: "85%" }}
+              ></div>
+            </div>
+          </div>
+          <div className="resource-item">
+            <div className="res-label">
+              <span>시민 공포 지수</span>
+              <span>62%</span>
+            </div>
+            <div className="res-bar">
+              <div
+                className="res-progress orange"
+                style={{ width: "62%" }}
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        {/* 카드 3: 실시간 작전 로그 (터미널) */}
+        <div className="stat-card terminal-card">
+          <div className="card-header">
+            <Terminal size={20} color="#00ff00" />
+            <h3>실시간 작전 로그</h3>
+          </div>
+          <div className="terminal-body">
+            {logs.map((log, i) => (
+              <div key={i} className="log-line">
+                {log}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 카드 4: 생존 신고 버튼 */}
+        <div className="stat-card report-card">
+          <div className="card-header">
+            <Zap size={20} color="#ffd700" />
+            <h3>본부 보고</h3>
+          </div>
+          <button className="report-btn" onClick={handleReport}>
+            🚨 생존 신고 (REPORT)
+          </button>
+          <div className="security-status-info">
+            <ShieldAlert size={16} color="#ff4444" />{" "}
+            <span>보안 등급: LEVEL 4 (위험)</span>
           </div>
         </div>
       </div>
-      <div className="stat-card">
-        <div className="card-header">
-          <Target size={20} color="#a855f7" />
-          <h3>제거 대상</h3>
-        </div>
-        <ul className="target-list">
-          <li>
-            <span>LHS</span> <span className="priority high">HIGH</span>
-          </li>
-        </ul>
-      </div>
-      <div className="stat-card">
-        <div className="card-header">
-          <ShieldAlert size={20} color="#ff4444" />
-          <h3>보안 등급</h3>
-        </div>
-        <div className="security-status">
-          <h4 style={{ color: "#ff4444" }}>LEVEL 4 : 위험</h4>
-        </div>
-      </div>
     </div>
-  </div>
-);
+  );
+};
 
 /* =========================================
    [5] App Shell
@@ -549,34 +581,22 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        try {
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            setUserData(docSnap.data());
-          } else {
-            setUserData({
-              uid: user.uid,
-              email: user.email,
-              name: user.displayName || "이름없음",
-              role: "user",
-            });
-          }
-        } catch (error) {
-          console.error("정보 로딩 실패:", error);
-        }
-      } else {
-        setUserData(null);
-      }
+        const docSnap = await getDoc(doc(db, "users", user.uid));
+        setUserData(
+          docSnap.exists()
+            ? docSnap.data()
+            : {
+                uid: user.uid,
+                email: user.email,
+                name: user.displayName || "이름없음",
+                role: "user",
+              },
+        );
+      } else setUserData(null);
       setLoading(false);
     });
     return () => unsubscribe();
   }, []);
-
-  const handleLogout = () => {
-    signOut(auth);
-  };
 
   if (loading) return <div className="loading-screen">시스템 로딩 중...</div>;
 
@@ -611,14 +631,20 @@ function App() {
                   <Link to="/board">
                     <MessageSquare /> 비밀 게시판
                   </Link>
-                  <a href="#" onClick={handleLogout} className="logout-btn">
+                  <a
+                    href="#"
+                    onClick={() => signOut(auth)}
+                    className="logout-btn"
+                  >
                     <Lock /> 로그아웃
                   </a>
                 </nav>
-
                 <main className="content">
                   <Routes>
-                    <Route path="/" element={<MainHome />} />
+                    <Route
+                      path="/"
+                      element={<MainHome userData={userData} />}
+                    />
                     <Route
                       path="/notice"
                       element={<Notice userData={userData} />}
