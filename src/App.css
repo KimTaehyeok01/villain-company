@@ -568,7 +568,10 @@ body,
   }
 }
 
-/* 태블릿 (1024px 이하) */
+/* =========================================
+   6. 반응형 (모바일 최적화)
+   ========================================= */
+
 @media (max-width: 1024px) {
   .sidebar {
     width: 200px;
@@ -576,103 +579,113 @@ body,
   .dashboard-grid {
     gap: 15px;
   }
-  .timer-display {
-    font-size: 1.8rem;
-  }
 }
 
-/* 모바일 (768px 이하) */
+/* 모바일 (768px 이하) - 아이폰 등 */
 @media (max-width: 768px) {
   .villain-container {
     flex-direction: column;
     overflow-y: auto;
   }
 
+  /* ★ 상단바 디자인 개선 (로고 왼쪽, 아이콘 오른쪽 정렬) ★ */
   .sidebar {
     width: 100%;
-    height: auto;
+    height: 60px; /* 얇은 바 형태 */
     flex-direction: row;
-    flex-wrap: wrap;
-    padding: 15px;
+    align-items: center;
+    justify-content: flex-start; /* 왼쪽 정렬 시작 */
+    padding: 0 16px;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
-    justify-content: space-between;
-    align-items: center;
+    position: sticky; /* 상단 고정 */
+    top: 0;
+    z-index: 1000;
+    background: rgba(10, 10, 12, 0.95);
+    backdrop-filter: blur(10px);
+    gap: 8px; /* 아이콘 간격 */
   }
 
+  /* 로고: 왼쪽 고정 및 나머지 요소 밀어내기 */
   .sidebar .logo {
-    margin-bottom: 0;
     font-size: 1.5rem;
+    margin-bottom: 0;
+    margin-right: auto; /* 핵심: 오른쪽 여백을 최대로 써서 나머지를 밈 */
   }
 
+  /* 모바일에서 유저 정보(이름표) 숨김 - 깔끔함 유지 */
   .user-info {
-    display: none; /* 모바일에서 공간 확보를 위해 유저 정보 숨김 (필요시 조정) */
+    display: none;
   }
 
+  /* 메뉴 아이콘들 */
   .sidebar a {
-    padding: 8px 12px;
-    font-size: 0.9rem;
+    font-size: 0; /* 글자 숨김 */
+    padding: 8px;
+    gap: 0;
+    border-radius: 8px;
   }
 
+  .sidebar a svg {
+    width: 24px;
+    height: 24px;
+    color: #888;
+  }
+
+  .sidebar a:hover {
+    background: transparent;
+  }
+  .sidebar a:hover svg {
+    color: var(--point-color);
+  }
+
+  /* 로그아웃 버튼 */
   .logout-btn {
     margin-top: 0;
+    font-size: 0;
+    padding: 8px;
+    margin-left: 5px; /* 약간의 구분감 */
+  }
+  .logout-btn svg {
+    width: 24px;
+    height: 24px;
   }
 
+  /* 본문 영역 */
   .content {
     padding: 20px;
     overflow-y: visible;
   }
 
-  /* 메인 홈 그리드 1열로 변경 */
   .dashboard-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* 1열 배치 */
   }
 
-  /* 문의 사항 페이지 헤더 조절 */
+  /* 타이머 폰트 조절 */
+  .timer-display {
+    font-size: 1.8rem;
+  }
+
+  /* 문의 페이지 헤더 */
   .page-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
   }
-
   .header-actions {
     width: 100%;
     justify-content: space-between;
   }
-
   .search-bar {
     width: 100%;
   }
 
-  /* 모달 너비 조절 */
   .modal-content {
     width: 95%;
     padding: 20px;
   }
-
   .auth-box {
     padding: 30px 20px;
     width: 90%;
-  }
-}
-
-/* 소형 모바일 (480px 이하) */
-@media (max-width: 480px) {
-  .sidebar {
-    gap: 10px;
-    justify-content: center;
-  }
-
-  .sidebar a {
-    font-size: 0.8rem;
-    padding: 6px 10px;
-  }
-
-  .timer-display {
-    font-size: 1.5rem;
-  }
-
-  .auth-box .logo {
-    font-size: 2.2rem;
   }
 }
