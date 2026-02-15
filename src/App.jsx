@@ -26,6 +26,7 @@ import {
   Terminal,
   Clock,
   Zap,
+  CheckCircle,
 } from "lucide-react";
 import "./App.css";
 
@@ -65,17 +66,14 @@ const SignupPage = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     setErrorMsg("");
-
     if (password !== confirmPassword) {
       setErrorMsg("비밀번호가 서로 다르다.");
       return;
     }
-
     if (!name.trim()) {
       setErrorMsg("이름(활동명)을 입력해라.");
       return;
     }
-
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -84,16 +82,15 @@ const SignupPage = () => {
       );
       const user = userCredential.user;
       await updateProfile(user, { displayName: name });
-
       const role = email === "admin@villain.com" ? "admin" : "user";
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         name: name,
         email: email,
         role: role,
+        lastCheckIn: "",
         createdAt: new Date().toISOString(),
       });
-
       alert(`환영한다, ${name}. 다시 로그인해라.`);
       navigate("/login");
     } catch (error) {
@@ -174,8 +171,6 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const navigate = useNavigate();
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -185,7 +180,6 @@ const LoginPage = () => {
       setErrorMsg("이메일 혹은 비밀번호가 틀렸다.");
     }
   };
-
   return (
     <div className="auth-container fade-in">
       <div className="auth-box">
@@ -213,7 +207,10 @@ const LoginPage = () => {
         </form>
         <div className="auth-footer">
           계정이 없나?{" "}
-          <span onClick={() => navigate("/signup")} className="link-text">
+          <span
+            onClick={() => (window.location.href = "/signup")}
+            className="link-text"
+          >
             회원가입
           </span>
         </div>
@@ -223,7 +220,7 @@ const LoginPage = () => {
 };
 
 /* =========================================
-   [3] 문의 게시판 (네 코드 그대로 유지)
+   [3] 문의 게시판 (Notice)
    ========================================= */
 const Notice = ({ userData }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -452,9 +449,9 @@ const Notice = ({ userData }) => {
 };
 
 /* =========================================
-   [4] 메인 대시보드 (아지트 - 4대 기능 추가)
+   [4] 메인 대시보드 (출석 1회 제한 & 로그 연동)
    ========================================= */
-const MainHome = ({ userData }) => {
+const MainHome = ({ userData, setUserData }) => {
   const [timeLeft, setTimeLeft] = useState("");
   const [logs, setLogs] = useState([
     `[SYSTEM] 빌런 네트워크 접속 중...`,
@@ -462,7 +459,9 @@ const MainHome = ({ userData }) => {
     `[NOTICE] 새로운 지령을 대기하십시오.`,
   ]);
 
-  // 1. D-Day 카운트다운
+  const todayStr = new Date().toISOString().split("T")[0];
+  const isCheckedIn = userData?.lastCheckIn === todayStr;
+
   useEffect(() => {
     const targetDate = new Date("2026-12-31T23:59:59");
     const timer = setInterval(() => {
@@ -477,12 +476,27 @@ const MainHome = ({ userData }) => {
     return () => clearInterval(timer);
   }, []);
 
-  // 2. 생존 신고 기능
-  const handleReport = () => {
-    const time = new Date().toLocaleTimeString();
-    const newLog = `[INFO] ${userData.name} 빌런 생존 보고 완료. (${time})`;
-    setLogs((prev) => [newLog, ...prev.slice(0, 7)]);
-    alert("생존 신고가 접수되었다.");
+  const handleReport = async () => {
+    // 이미 눌렀는데 또 누르려고 할 때 (코드상 방어)
+    if (isCheckedIn)
+      return alert("오늘은 이미 생존 인증을 마쳤다. 내일 다시 보고해라.");
+
+    try {
+      const userRef = doc(db, "users", userData.uid);
+      await updateDoc(userRef, { lastCheckIn: todayStr });
+
+      setUserData((prev) => ({ ...prev, lastCheckIn: todayStr }));
+
+      // 성공했을 때만 실시간 로그에 추가
+      const time = new Date().toLocaleTimeString();
+      const newLog = `[INFO] ${userData.name} 빌런 생존 보고 완료. (${time})`;
+      setLogs((prev) => [newLog, ...prev.slice(0, 7)]);
+
+      alert("생존 인증 완료. 활동 마크가 부여되었다.");
+    } catch (error) {
+      console.error(error);
+      alert("통신 에러. 다시 시도해라.");
+    }
   };
 
   return (
@@ -495,7 +509,6 @@ const MainHome = ({ userData }) => {
       </div>
 
       <div className="dashboard-grid">
-        {/* 카드 1: D-Day */}
         <div className="stat-card timer-card">
           <div className="card-header">
             <Clock size={20} color="#ff4444" />
@@ -505,7 +518,6 @@ const MainHome = ({ userData }) => {
           <p className="timer-desc">성공적인 거사를 위해 역량을 결집하라.</p>
         </div>
 
-        {/* 카드 2: 리소스 현황 (그래프) */}
         <div className="stat-card">
           <div className="card-header">
             <Activity size={20} color="#a855f7" />
@@ -537,7 +549,6 @@ const MainHome = ({ userData }) => {
           </div>
         </div>
 
-        {/* 카드 3: 실시간 작전 로그 (터미널) */}
         <div className="stat-card terminal-card">
           <div className="card-header">
             <Terminal size={20} color="#00ff00" />
@@ -552,14 +563,17 @@ const MainHome = ({ userData }) => {
           </div>
         </div>
 
-        {/* 카드 4: 생존 신고 버튼 */}
         <div className="stat-card report-card">
           <div className="card-header">
             <Zap size={20} color="#ffd700" />
             <h3>본부 보고</h3>
           </div>
-          <button className="report-btn" onClick={handleReport}>
-            🚨 생존 신고 (REPORT)
+          <button
+            className={`report-btn ${isCheckedIn ? "done" : ""}`}
+            onClick={handleReport}
+            disabled={isCheckedIn}
+          >
+            {isCheckedIn ? "✔️ 생존 인증 완료" : "🚨 생존 신고 (REPORT)"}
           </button>
           <div className="security-status-info">
             <ShieldAlert size={16} color="#ff4444" />{" "}
@@ -581,17 +595,19 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const docSnap = await getDoc(doc(db, "users", user.uid));
-        setUserData(
-          docSnap.exists()
-            ? docSnap.data()
-            : {
-                uid: user.uid,
-                email: user.email,
-                name: user.displayName || "이름없음",
-                role: "user",
-              },
-        );
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setUserData(docSnap.data());
+        } else {
+          setUserData({
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName || "이름없음",
+            role: "user",
+            lastCheckIn: "",
+          });
+        }
       } else setUserData(null);
       setLoading(false);
     });
@@ -599,6 +615,9 @@ function App() {
   }, []);
 
   if (loading) return <div className="loading-screen">시스템 로딩 중...</div>;
+
+  const todayStr = new Date().toISOString().split("T")[0];
+  const isCheckedIn = userData?.lastCheckIn === todayStr;
 
   return (
     <Router>
@@ -617,7 +636,14 @@ function App() {
                 <nav className="sidebar">
                   <h1 className="logo">VC</h1>
                   <div className="user-info">
-                    <div className="user-name">{userData.name}</div>
+                    <div className="user-name">
+                      {userData.name}
+                      {isCheckedIn && (
+                        <span className="checkin-badge">
+                          <CheckCircle size={12} /> 활동 중
+                        </span>
+                      )}
+                    </div>
                     <div className="user-role">
                       {userData.role === "admin" ? "관리자" : "빌런"}
                     </div>
@@ -643,7 +669,12 @@ function App() {
                   <Routes>
                     <Route
                       path="/"
-                      element={<MainHome userData={userData} />}
+                      element={
+                        <MainHome
+                          userData={userData}
+                          setUserData={setUserData}
+                        />
+                      }
                     />
                     <Route
                       path="/notice"

@@ -24,9 +24,7 @@ body,
   overflow: hidden;
 }
 
-/* =========================================
-   2. Auth Page (로그인/회원가입) 
-   ========================================= */
+/* Auth */
 .auth-container {
   position: fixed;
   top: 0;
@@ -115,9 +113,7 @@ body,
   margin-top: 5px;
 }
 
-/* =========================================
-   3. Main Layout & Sidebar
-   ========================================= */
+/* Layout */
 .villain-container {
   display: flex;
   width: 100vw;
@@ -153,7 +149,21 @@ body,
   font-size: 1.1rem;
   font-weight: bold;
   color: white;
-  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.checkin-badge {
+  font-size: 0.65rem;
+  color: #00ff00;
+  background: rgba(0, 255, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
 }
 .user-role {
   font-size: 0.75rem;
@@ -162,6 +172,7 @@ body,
   padding: 4px 10px;
   border-radius: 12px;
   display: inline-block;
+  margin-top: 5px;
 }
 .sidebar a {
   color: #888;
@@ -192,9 +203,7 @@ body,
   align-items: center;
 }
 
-/* =========================================
-   4. 아지트 (MainHome) 스타일 (추가됨)
-   ========================================= */
+/* MainHome Dashboard */
 .main-home-wrapper {
   width: 100%;
   max-width: 1000px;
@@ -283,10 +292,20 @@ body,
   transition: 0.3s;
   font-size: 1rem;
 }
-.report-btn:hover {
+.report-btn:hover:not(:disabled) {
   background: #ffd700;
   color: #000;
   box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+.report-btn:disabled {
+  border-color: #333;
+  color: #666;
+  cursor: not-allowed;
+  background: #0a0a0c;
+}
+.report-btn.done {
+  border-color: #00ff00;
+  color: #00ff00;
 }
 .security-status-info {
   display: flex;
@@ -309,9 +328,7 @@ body,
   }
 }
 
-/* =========================================
-   5. 문의 내역 (Notice) - 네 코드 그대로 유지
-   ========================================= */
+/* Notice Page */
 .notice-page {
   width: 100%;
   display: flex;
