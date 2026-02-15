@@ -22,7 +22,7 @@ import {
   UserPlus,
   LogIn,
   ArrowLeft,
-  Trash2, // 삭제 아이콘 추가
+  Trash2,
 } from "lucide-react";
 import "./App.css";
 
@@ -32,7 +32,7 @@ import {
   collection,
   addDoc,
   updateDoc,
-  deleteDoc, // 삭제 기능 import
+  deleteDoc,
   doc,
   onSnapshot,
   query,
@@ -240,7 +240,7 @@ const LoginPage = () => {
 };
 
 /* =========================================
-   [3] 문의 게시판 (삭제 기능 추가 및 간격 수정)
+   [3] 문의 게시판 
    ========================================= */
 const Notice = ({ userData }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -417,10 +417,10 @@ const Notice = ({ userData }) => {
             </div>
 
             <h3>{selectedNotice.title}</h3>
-            {/* 작성자 표시부 (간격 수정됨) */}
+            {/* 작성자 표시부 */}
             <p className="modal-author">작성자: {selectedNotice.author}</p>
 
-            {/* 본문 (간격 수정됨) */}
+            {/* 본문  */}
             <div className="modal-body">{selectedNotice.content}</div>
 
             <div className="reply-section">
