@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -19,6 +19,7 @@ import {
   X,
   Send,
   Lock,
+  Unlock,
   UserPlus,
   LogIn,
   ArrowLeft,
@@ -27,6 +28,9 @@ import {
   Clock,
   Zap,
   CheckCircle,
+  Plus,
+  Users,
+  Key,
 } from "lucide-react";
 import "./App.css";
 
@@ -43,6 +47,7 @@ import {
   orderBy,
   setDoc,
   getDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
@@ -171,6 +176,8 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -207,10 +214,7 @@ const LoginPage = () => {
         </form>
         <div className="auth-footer">
           계정이 없나?{" "}
-          <span
-            onClick={() => (window.location.href = "/signup")}
-            className="link-text"
-          >
+          <span onClick={() => navigate("/signup")} className="link-text">
             회원가입
           </span>
         </div>
@@ -449,7 +453,7 @@ const Notice = ({ userData }) => {
 };
 
 /* =========================================
-   [4] 메인 대시보드 (출석 1회 제한 & 로그 연동)
+   [4] 메인 대시보드
    ========================================= */
 const MainHome = ({ userData, setUserData }) => {
   const [timeLeft, setTimeLeft] = useState("");
@@ -477,24 +481,17 @@ const MainHome = ({ userData, setUserData }) => {
   }, []);
 
   const handleReport = async () => {
-    // 이미 눌렀는데 또 누르려고 할 때 (코드상 방어)
     if (isCheckedIn)
       return alert("오늘은 이미 생존 인증을 마쳤다. 내일 다시 보고해라.");
-
     try {
       const userRef = doc(db, "users", userData.uid);
       await updateDoc(userRef, { lastCheckIn: todayStr });
-
       setUserData((prev) => ({ ...prev, lastCheckIn: todayStr }));
-
-      // 성공했을 때만 실시간 로그에 추가
       const time = new Date().toLocaleTimeString();
       const newLog = `[INFO] ${userData.name} 빌런 생존 보고 완료. (${time})`;
       setLogs((prev) => [newLog, ...prev.slice(0, 7)]);
-
       alert("생존 인증 완료. 활동 마크가 부여되었다.");
     } catch (error) {
-      console.error(error);
       alert("통신 에러. 다시 시도해라.");
     }
   };
@@ -507,7 +504,6 @@ const MainHome = ({ userData, setUserData }) => {
           <span className="online-dot"></span> 8명의 빌런이 작당 모의 중...
         </p>
       </div>
-
       <div className="dashboard-grid">
         <div className="stat-card timer-card">
           <div className="card-header">
@@ -517,7 +513,6 @@ const MainHome = ({ userData, setUserData }) => {
           <div className="timer-display">{timeLeft}</div>
           <p className="timer-desc">성공적인 거사를 위해 역량을 결집하라.</p>
         </div>
-
         <div className="stat-card">
           <div className="card-header">
             <Activity size={20} color="#a855f7" />
@@ -548,7 +543,6 @@ const MainHome = ({ userData, setUserData }) => {
             </div>
           </div>
         </div>
-
         <div className="stat-card terminal-card">
           <div className="card-header">
             <Terminal size={20} color="#00ff00" />
@@ -562,7 +556,6 @@ const MainHome = ({ userData, setUserData }) => {
             ))}
           </div>
         </div>
-
         <div className="stat-card report-card">
           <div className="card-header">
             <Zap size={20} color="#ffd700" />
@@ -581,6 +574,252 @@ const MainHome = ({ userData, setUserData }) => {
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+/* =========================================
+   [NEW] 비밀 게시판 (SecretBoard) - 기능 업그레이드
+   ========================================= */
+const SecretBoard = ({ userData }) => {
+  const [rooms, setRooms] = useState([]);
+  const [currentRoom, setCurrentRoom] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [isCreatingRoom, setIsCreatingRoom] = useState(false);
+
+  // 방 생성 관련 상태
+  const [newRoomName, setNewRoomName] = useState("");
+  const [newMaxPeople, setNewMaxPeople] = useState(10);
+  const [newIsPrivate, setNewIsPrivate] = useState(false);
+  const [newRoomPassword, setNewRoomPassword] = useState("");
+
+  const scrollRef = useRef();
+
+  useEffect(() => {
+    const q = query(collection(db, "chatRooms"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setRooms(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!currentRoom) return;
+    const q = query(
+      collection(db, `chatRooms/${currentRoom.id}/messages`),
+      orderBy("createdAt", "asc"),
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setMessages(snapshot.docs.map((doc) => doc.data()));
+      setTimeout(
+        () => scrollRef.current?.scrollIntoView({ behavior: "smooth" }),
+        100,
+      );
+    });
+    return () => unsubscribe();
+  }, [currentRoom]);
+
+  const createRoom = async () => {
+    if (!newRoomName.trim()) return alert("방 이름을 입력해라.");
+    if (newIsPrivate && !newRoomPassword) return alert("비밀번호를 설정해라.");
+
+    await addDoc(collection(db, "chatRooms"), {
+      name: newRoomName,
+      maxParticipants: Number(newMaxPeople),
+      isPrivate: newIsPrivate,
+      password: newRoomPassword, // 실제 서비스에선 암호화 권장 (학습용이라 평문 저장)
+      createdBy: userData.uid, // 만든 사람 ID 저장
+      createdAt: new Date().toISOString(),
+    });
+
+    setNewRoomName("");
+    setNewMaxPeople(10);
+    setNewIsPrivate(false);
+    setNewRoomPassword("");
+    setIsCreatingRoom(false);
+  };
+
+  const handleJoinRoom = (room) => {
+    if (room.isPrivate) {
+      const inputPwd = prompt("🔒 비밀 작전 방이다. 암구호(비밀번호)를 대라.");
+      if (inputPwd === room.password) {
+        setCurrentRoom(room);
+      } else {
+        alert("암구호가 틀렸다. 접근 거부.");
+      }
+    } else {
+      setCurrentRoom(room);
+    }
+  };
+
+  const handleDeleteRoom = async (e, roomId) => {
+    e.stopPropagation(); // 부모 클릭 방지
+    if (window.confirm("이 작전 방을 폭파하겠나? 복구 불가능하다.")) {
+      try {
+        await deleteDoc(doc(db, "chatRooms", roomId));
+        alert("방이 제거되었다.");
+      } catch (error) {
+        alert("삭제 중 오류 발생.");
+      }
+    }
+  };
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+    await addDoc(collection(db, `chatRooms/${currentRoom.id}/messages`), {
+      text: newMessage,
+      sender: userData.name,
+      uid: userData.uid,
+      createdAt: serverTimestamp(),
+    });
+    setNewMessage("");
+  };
+
+  if (!currentRoom) {
+    return (
+      <div className="fade-in secret-board">
+        <div className="page-header">
+          <h2>💬 비밀 접선 장소</h2>
+          <button
+            className="create-room-btn"
+            onClick={() => setIsCreatingRoom(!isCreatingRoom)}
+          >
+            <Plus size={18} /> {isCreatingRoom ? "취소" : "방 만들기"}
+          </button>
+        </div>
+
+        {isCreatingRoom && (
+          <div className="room-creator fade-in">
+            <div className="creator-row">
+              <input
+                type="text"
+                placeholder="작전명 (방 이름)"
+                value={newRoomName}
+                onChange={(e) => setNewRoomName(e.target.value)}
+                className="input-name"
+              />
+              <input
+                type="number"
+                placeholder="정원"
+                value={newMaxPeople}
+                onChange={(e) => setNewMaxPeople(e.target.value)}
+                min="2"
+                max="100"
+                className="input-num"
+              />
+            </div>
+            <div className="creator-row">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={newIsPrivate}
+                  onChange={(e) => setNewIsPrivate(e.target.checked)}
+                />
+                <span>🔒 비공개 설정</span>
+              </label>
+              {newIsPrivate && (
+                <input
+                  type="password"
+                  placeholder="비밀번호 설정"
+                  value={newRoomPassword}
+                  onChange={(e) => setNewRoomPassword(e.target.value)}
+                  className="input-pwd"
+                />
+              )}
+            </div>
+            <button onClick={createRoom} className="create-confirm-btn">
+              개설하기
+            </button>
+          </div>
+        )}
+
+        <div className="room-list">
+          {rooms.length > 0 ? (
+            rooms.map((room) => (
+              <div
+                key={room.id}
+                className="room-item"
+                onClick={() => handleJoinRoom(room)}
+              >
+                <div className="room-icon">
+                  {room.isPrivate ? (
+                    <Lock size={24} color="#ff4444" />
+                  ) : (
+                    <MessageSquare size={24} color="#a855f7" />
+                  )}
+                </div>
+                <div className="room-info">
+                  <h4>{room.name}</h4>
+                  <div className="room-meta">
+                    <span>
+                      <Users size={12} /> 정원: {room.maxParticipants}명
+                    </span>
+                    {room.isPrivate && (
+                      <span className="private-tag">비공개</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* 방장(createdBy)이거나 관리자(admin)일 때만 삭제 버튼 표시 */}
+                {(room.createdBy === userData.uid ||
+                  userData.role === "admin") && (
+                  <button
+                    className="room-delete-btn"
+                    onClick={(e) => handleDeleteRoom(e, room.id)}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                )}
+                <ChevronRight size={20} color="#666" />
+              </div>
+            ))
+          ) : (
+            <p className="no-result">개설된 작전 방이 없다.</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fade-in chat-room">
+      <div className="chat-header">
+        <button onClick={() => setCurrentRoom(null)}>
+          <ArrowLeft size={20} />
+        </button>
+        <h3>
+          {currentRoom.name}{" "}
+          <span style={{ fontSize: "0.8rem", color: "#888" }}>
+            ({currentRoom.maxParticipants}명 제한)
+          </span>
+        </h3>
+        <span className="live-badge">LIVE</span>
+      </div>
+      <div className="chat-body">
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`chat-bubble ${msg.uid === userData.uid ? "my-msg" : "other-msg"}`}
+          >
+            <div className="chat-sender">{msg.sender}</div>
+            <div className="chat-text">{msg.text}</div>
+          </div>
+        ))}
+        <div ref={scrollRef}></div>
+      </div>
+      <form className="chat-input-area" onSubmit={sendMessage}>
+        <input
+          type="text"
+          placeholder="메시지 입력..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+        />
+        <button type="submit">
+          <Send size={18} />
+        </button>
+      </form>
     </div>
   );
 };
@@ -637,7 +876,7 @@ function App() {
                   <h1 className="logo">VC</h1>
                   <div className="user-info">
                     <div className="user-name">
-                      {userData.name}
+                      {userData.name}{" "}
                       {isCheckedIn && (
                         <span className="checkin-badge">
                           <CheckCircle size={12} /> 활동 중
@@ -682,12 +921,7 @@ function App() {
                     />
                     <Route
                       path="/board"
-                      element={
-                        <div>
-                          <h2>💬 비밀 게시판</h2>
-                          <p>준비 중...</p>
-                        </div>
-                      }
+                      element={<SecretBoard userData={userData} />}
                     />
                     <Route path="*" element={<Navigate to="/" />} />
                   </Routes>
