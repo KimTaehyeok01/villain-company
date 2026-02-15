@@ -1,479 +1,484 @@
 /* =========================================
-   Global Variables & Reset
+   1. 기본 설정
    ========================================= */
-/* [핵심 수정] 
-   모든 요소의 패딩과 테두리를 너비에 포함시킵니다.
-   이게 없으면 padding 줬을 때 100%를 넘어서 튀어나갑니다.
-*/
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 :root {
   --bg-color: #0a0a0c;
+  --sidebar-bg: #111113;
   --point-color: #a855f7;
   --text-color: #e2e8f0;
+  --border-color: #333;
 }
 
-body {
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  font-family: "Pretendard", sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
-  margin: 0;
-  font-family: "Pretendard", sans-serif;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 /* =========================================
-   Layout Structure
+   2. Auth Page (로그인/회원가입)
+   ========================================= */
+.auth-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+  z-index: 9999;
+}
+
+.auth-box {
+  background: #111;
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 0 50px rgba(168, 85, 247, 0.15);
+  text-align: center;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+.auth-box::-webkit-scrollbar {
+  width: 0;
+}
+
+.auth-box .logo {
+  font-size: 3rem;
+  color: var(--point-color);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 10px;
+}
+.auth-desc {
+  color: #888;
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.input-group {
+  width: 100%;
+}
+.auth-form input {
+  width: 100%;
+  padding: 16px;
+  background: #1a1a1d;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s;
+}
+.auth-form input:focus {
+  border-color: var(--point-color);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+}
+.auth-btn {
+  background: var(--point-color);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: 0.2s;
+}
+.auth-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+.auth-footer {
+  margin-top: 25px;
+  font-size: 0.9rem;
+  color: #666;
+}
+.link-text {
+  color: var(--point-color);
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 8px;
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.error-text {
+  color: #ff4444;
+  font-size: 0.85rem;
+  text-align: left;
+  margin-top: 5px;
+}
+
+/* =========================================
+   3. Main Layout (메인 화면)
    ========================================= */
 .villain-container {
   display: flex;
-  height: 100vh;
   width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* Sidebar Navigation */
+/* Sidebar */
 .sidebar {
-  width: 200px;
-  background: #111113;
+  width: 250px;
+  background: var(--sidebar-bg);
   padding: 30px 20px;
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  border-right: 1px solid #222;
+  gap: 20px;
+  border-right: 1px solid var(--border-color);
   flex-shrink: 0;
 }
-
-.logo {
-  color: var(--point-color);
+.sidebar .logo {
   font-size: 2rem;
-  margin-bottom: 20px;
-  text-shadow: 0 0 15px var(--point-color);
   font-weight: 900;
-  letter-spacing: -1px;
+  color: var(--point-color);
+  margin-bottom: 20px;
+  text-align: center;
 }
-
+.user-info {
+  text-align: center;
+  margin-bottom: 10px;
+  background: #1a1a1d;
+  padding: 20px 10px;
+  border-radius: 15px;
+  border: 1px solid #333;
+}
+.user-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 5px;
+}
+.user-role {
+  font-size: 0.75rem;
+  color: #aaa;
+  background: #222;
+  padding: 4px 10px;
+  border-radius: 12px;
+  display: inline-block;
+}
 .sidebar a {
   color: #888;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
   transition: 0.3s;
-  font-size: 1rem;
   font-weight: 500;
 }
-
 .sidebar a:hover {
+  background: rgba(168, 85, 247, 0.1);
   color: var(--point-color);
-  transform: translateX(5px);
+}
+.logout-btn {
+  margin-top: auto;
+  color: #ff4444 !important;
 }
 
-/* Main Content Area */
+/* Content Area - ★여기가 핵심★ */
 .content {
   flex: 1;
-  padding: 60px 40px;
+  background: radial-gradient(circle at top right, #161122 0%, #0a0a0c 40%);
+  padding: 40px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  overflow-y: auto;
-  background: radial-gradient(circle at top right, #161122 0%, #0a0a0c 40%);
+  align-items: center; /* 가로 중앙 정렬의 기본 */
 }
 
-.fade-in {
-  animation: fadeIn 0.5s ease-out;
+/* ★ Notice Page Wrapper - 문의 내역 페이지 전체 감싸는 박스 ★ 
+   width: 100%를 주되, 내부 요소들이 중앙 정렬되도록 flex column + center 설정 */
+.notice-page {
   width: 100%;
-  max-width: 850px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 내부 아이템들을 가운데로 */
 }
 
-/* =========================================
-   Components: Header & Controls
-   ========================================= */
+/* Page Header - 중앙 정렬 적용 */
 .page-header {
+  width: 100%;
+  max-width: 900px; /* 최대 너비 제한 */
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 40px;
-  width: 100%;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #222;
+  padding-bottom: 20px;
+  /* ★중요★ 좌우 여백 자동(auto)으로 중앙 배치 */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .header-actions {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
+  align-items: center;
+  gap: 15px;
 }
-
 .search-bar {
   display: flex;
   align-items: center;
   background: #18181b;
-  padding: 10px 18px;
-  border-radius: 25px;
-  border: 1px solid #333;
-  width: 300px;
-  transition: 0.3s;
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
 }
-
-.search-bar:focus-within {
-  border-color: var(--point-color);
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
-}
-
 .search-bar input {
   background: transparent;
   border: none;
   color: white;
-  margin-left: 12px;
+  margin-left: 10px;
   outline: none;
-  width: 100%;
-  font-size: 0.95rem;
 }
-
-.admin-btn {
-  background: #1f1f23;
+.admin-badge {
+  background: gold;
+  color: black;
+  font-weight: bold;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+.user-badge {
+  background: #333;
   color: #aaa;
-  border: 1px solid #333;
-  padding: 6px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.3s;
-  font-size: 0.85rem;
+  font-weight: bold;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
 }
 
-.admin-btn:hover {
-  background: var(--point-color);
-  color: white;
-  border-color: var(--point-color);
-}
-
-/* =========================================
-   Components: Form & List
-   ========================================= */
+/* Admin Form (글쓰기 창) - 중앙 정렬 적용 */
 .admin-form {
+  width: 100%;
+  max-width: 900px; /* 최대 너비 제한 */
   background: #18181b;
   padding: 25px;
   border-radius: 15px;
   border: 1px solid var(--point-color);
-  margin-bottom: 35px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
-  width: 100%; /* 너비 꽉 채우기 */
+  gap: 15px;
+  margin-bottom: 30px;
+  /* ★중요★ 중앙 배치 */
+  margin-left: auto;
+  margin-right: auto;
 }
-
 .admin-form input,
 .admin-form textarea {
   background: #0d0d0f;
-  border: 1px solid #333;
+  border: 1px solid var(--border-color);
   color: white;
-  padding: 14px;
-  border-radius: 10px;
-  outline: none;
+  padding: 15px;
+  border-radius: 8px;
+  width: 100%;
   font-family: inherit;
-  width: 100%; /* input도 튀어나가지 않게 */
-}
-
-.admin-form textarea {
-  height: 120px;
+  outline: none;
   resize: none;
 }
-
+.admin-form textarea {
+  height: 120px;
+}
 .admin-form button {
   background: var(--point-color);
   color: white;
   border: none;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 8px;
+  font-weight: bold;
   cursor: pointer;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: 8px;
-  font-weight: bold;
-  transition: 0.3s;
 }
 
-.admin-form button:hover {
-  filter: brightness(1.2);
-  transform: translateY(-2px);
-}
-
+/* Notice List (문의 목록) - 중앙 정렬 적용 */
 .notice-list {
+  width: 100%;
+  max-width: 900px; /* 최대 너비 제한 */
   display: flex;
   flex-direction: column;
   gap: 15px;
-  width: 100%;
+  /* ★중요★ 중앙 배치 */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .notice-item {
   background: #18181b;
-  padding: 24px;
-  border-radius: 16px;
-  border: 1px solid #28282c;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #222;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  transition: 0.3s;
-  overflow: hidden;
+  transition: 0.2s;
 }
-
 .notice-item:hover {
-  background: #1e1e22;
-  transform: scale(1.02);
   border-color: var(--point-color);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  transform: translateX(5px);
 }
-
-.notice-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
-  margin-right: 15px;
-}
-
-.notice-date {
-  font-size: 0.8rem;
-  color: #666;
-  font-weight: 600;
-}
-
-.notice-title {
-  margin: 0;
-  font-size: 1.2rem;
-  color: var(--text-color);
-  letter-spacing: -0.5px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.text-truncate {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
-
 .status-badge {
   font-size: 0.7rem;
   padding: 3px 8px;
-  border-radius: 8px;
-  flex-shrink: 0;
-  white-space: nowrap;
+  border-radius: 5px;
+  margin-left: 10px;
 }
-
 .status-done {
-  background: #a855f7;
+  background: var(--point-color);
   color: white;
 }
-
 .status-wait {
   background: #333;
   color: #888;
 }
 
-.notice-author {
-  font-size: 0.9rem;
-  color: var(--point-color);
-  opacity: 0.8;
-  font-weight: 500;
+/* Dashboard Cards - 중앙 정렬 적용 */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 900px; /* 최대 너비 제한 */
+  /* ★중요★ 중앙 배치 */
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* =========================================
-   Components: Modal System
-   ========================================= */
+.stat-card {
+  background: #18181b;
+  padding: 25px;
+  border-radius: 15px;
+  border: 1px solid #222;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  color: #ccc;
+}
+.progress-bar {
+  background: #333;
+  height: 6px;
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.progress {
+  background: var(--point-color);
+  height: 100%;
+}
+
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(5px);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 2000;
-  padding: 20px;
+  align-items: center;
+  z-index: 10000;
 }
-
 .modal-content {
   background: #18181b;
-  width: 100%;
-  max-width: 650px;
-  max-height: 80vh;
-  padding: 40px;
-  border-radius: 24px;
-  border: 1px solid rgba(168, 85, 247, 0.4);
+  width: 90%;
+  max-width: 600px;
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid var(--point-color);
   box-shadow: 0 0 50px rgba(168, 85, 247, 0.2);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  animation: modalUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  max-height: 80vh;
+  overflow-y: auto;
 }
-
 .modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-  flex-shrink: 0;
+  margin-bottom: 20px;
 }
-
 .modal-close-btn {
   background: transparent;
   border: 1px solid #444;
   color: #888;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  transition: 0.3s;
+}
+.admin-textarea {
+  width: 100%;
+  height: 100px;
+  background: #111;
+  border: 1px solid #333;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  resize: none;
+}
+.admin-submit-btn {
+  background: #a855f7;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
   font-weight: bold;
 }
 
-.modal-close-btn:hover {
-  background: #333;
-  color: white;
-  border-color: white;
+.loading-screen {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  color: #a855f7;
 }
-
-.modal-author {
-  color: var(--point-color);
-  margin-bottom: 25px;
-  font-size: 1rem;
-  font-weight: 600;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #333;
-  flex-shrink: 0;
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
 }
-
-.modal-body {
-  line-height: 1.8;
-  color: #ccc;
-  font-size: 1.1rem;
-  white-space: pre-wrap;
-  overflow-y: auto;
-  padding-right: 10px;
-  flex: 1;
-}
-
-.modal-body::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-body::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 4px;
-}
-
-.modal-body::-webkit-scrollbar-thumb:hover {
-  background: var(--point-color);
-}
-
-@keyframes modalUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* =========================================
-   Dashboard Widgets & Animations
-   ========================================= */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-  width: 100%;
-}
-
-.stat-card {
-  background: #18181b;
-  padding: 30px;
-  border-radius: 20px;
-  border: 1px solid #28282c;
-  transition: 0.3s;
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .villain-container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    height: auto;
-    padding: 15px 20px;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    border-right: none;
-    border-bottom: 1px solid #222;
-    z-index: 100;
-  }
-
-  .logo {
-    font-size: 1.5rem;
-    margin-bottom: 0;
-  }
-
-  .sidebar a {
-    font-size: 0;
-    gap: 0;
-  }
-
-  .sidebar a svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .content {
-    padding: 20px;
-  }
-
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .header-actions {
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .search-bar {
-    width: 100%;
-  }
-
-  .modal-content {
-    width: 90%;
-    max-height: 85vh;
-    padding: 25px;
   }
 }
