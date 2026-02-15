@@ -1,5 +1,5 @@
 /* =========================================
-   1. 기본 설정
+   1. 기본 설정 (Reset)
    ========================================= */
 * {
   box-sizing: border-box;
@@ -27,7 +27,7 @@ body,
 }
 
 /* =========================================
-   2. Auth Page (로그인/회원가입)
+   2. Auth Page (로그인/회원가입) - 고정 중앙 정렬
    ========================================= */
 .auth-container {
   position: fixed;
@@ -207,7 +207,7 @@ body,
   color: #ff4444 !important;
 }
 
-/* Content Area - ★여기가 핵심★ */
+/* Content Area */
 .content {
   flex: 1;
   background: radial-gradient(circle at top right, #161122 0%, #0a0a0c 40%);
@@ -215,29 +215,27 @@ body,
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  align-items: center; /* 가로 중앙 정렬의 기본 */
+  align-items: center;
 }
 
-/* ★ Notice Page Wrapper - 문의 내역 페이지 전체 감싸는 박스 ★ 
-   width: 100%를 주되, 내부 요소들이 중앙 정렬되도록 flex column + center 설정 */
+/* Notice Page Wrapper */
 .notice-page {
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* 내부 아이템들을 가운데로 */
+  align-items: center;
 }
 
-/* Page Header - 중앙 정렬 적용 */
+/* Page Header */
 .page-header {
   width: 100%;
-  max-width: 900px; /* 최대 너비 제한 */
+  max-width: 900px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 30px;
   border-bottom: 1px solid #222;
   padding-bottom: 20px;
-  /* ★중요★ 좌우 여백 자동(auto)으로 중앙 배치 */
   margin-left: auto;
   margin-right: auto;
 }
@@ -279,10 +277,10 @@ body,
   font-size: 0.8rem;
 }
 
-/* Admin Form (글쓰기 창) - 중앙 정렬 적용 */
+/* Admin Form */
 .admin-form {
   width: 100%;
-  max-width: 900px; /* 최대 너비 제한 */
+  max-width: 900px;
   background: #18181b;
   padding: 25px;
   border-radius: 15px;
@@ -291,7 +289,6 @@ body,
   flex-direction: column;
   gap: 15px;
   margin-bottom: 30px;
-  /* ★중요★ 중앙 배치 */
   margin-left: auto;
   margin-right: auto;
 }
@@ -324,14 +321,13 @@ body,
   gap: 8px;
 }
 
-/* Notice List (문의 목록) - 중앙 정렬 적용 */
+/* Notice List */
 .notice-list {
   width: 100%;
-  max-width: 900px; /* 최대 너비 제한 */
+  max-width: 900px;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  /* ★중요★ 중앙 배치 */
   margin-left: auto;
   margin-right: auto;
 }
@@ -366,14 +362,13 @@ body,
   color: #888;
 }
 
-/* Dashboard Cards - 중앙 정렬 적용 */
+/* Dashboard Cards */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   width: 100%;
-  max-width: 900px; /* 최대 너비 제한 */
-  /* ★중요★ 중앙 배치 */
+  max-width: 900px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -441,6 +436,43 @@ body,
   border-radius: 5px;
   cursor: pointer;
 }
+
+/* 삭제 버튼 스타일 */
+.delete-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+}
+.delete-btn:hover {
+  background: #cc0000;
+}
+
+/* 모달 작성자 - 간격 수정 */
+.modal-author {
+  color: var(--point-color);
+  margin-bottom: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #333;
+}
+
+/* 모달 본문 */
+.modal-body {
+  line-height: 1.8;
+  color: #ccc;
+  font-size: 1.1rem;
+  white-space: pre-wrap;
+  margin-bottom: 30px;
+}
+
 .admin-textarea {
   width: 100%;
   height: 100px;

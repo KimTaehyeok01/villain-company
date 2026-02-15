@@ -11,7 +11,6 @@ import {
   Home,
   Megaphone,
   MessageSquare,
-  Users,
   Activity,
   Target,
   ShieldAlert,
@@ -23,6 +22,7 @@ import {
   UserPlus,
   LogIn,
   ArrowLeft,
+  Trash2, // 삭제 아이콘 추가
 } from "lucide-react";
 import "./App.css";
 
@@ -32,6 +32,7 @@ import {
   collection,
   addDoc,
   updateDoc,
+  deleteDoc, // 삭제 기능 import
   doc,
   onSnapshot,
   query,
@@ -48,7 +49,7 @@ import {
 } from "firebase/auth";
 
 /* =========================================
-   [1] 회원가입 페이지 (기능 업그레이드)
+   [1] 회원가입 페이지
    ========================================= */
 const SignupPage = () => {
   const [name, setName] = useState("");
@@ -62,20 +63,17 @@ const SignupPage = () => {
     e.preventDefault();
     setErrorMsg("");
 
-    // 1. 비밀번호 일치 확인
     if (password !== confirmPassword) {
       setErrorMsg("비밀번호가 서로 다르다.");
       return;
     }
 
-    // 2. 이름 입력 확인
     if (!name.trim()) {
       setErrorMsg("이름(활동명)을 입력해라.");
       return;
     }
 
     try {
-      // 3. 계정 생성
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -83,11 +81,8 @@ const SignupPage = () => {
       );
       const user = userCredential.user;
 
-      // 4. 프로필 업데이트 (Auth 정보)
       await updateProfile(user, { displayName: name });
 
-      // 5. DB에 유저 정보 저장 (여기서 관리자/사용자 구분)
-      // ★ 관리자 아이디: admin@villain.com 일 때만 role을 'admin'으로 설정
       const role = email === "admin@villain.com" ? "admin" : "user";
 
       await setDoc(doc(db, "users", user.uid), {
@@ -199,7 +194,6 @@ const LoginPage = () => {
     setErrorMsg("");
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // 로그인 성공 시 App 컴포넌트가 감지하여 메인으로 이동
     } catch (error) {
       console.error(error);
       setErrorMsg("이메일 혹은 비밀번호가 틀렸다.");
@@ -246,13 +240,12 @@ const LoginPage = () => {
 };
 
 /* =========================================
-   [3] 문의 게시판 (권한별 기능)
+   [3] 문의 게시판 (삭제 기능 추가 및 간격 수정)
    ========================================= */
 const Notice = ({ userData }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNotice, setSelectedNotice] = useState(null);
 
-  // ★ DB의 role이 'admin'이면 관리자 모드
   const isAdmin = userData?.role === "admin";
 
   const [notices, setNotices] = useState([]);
@@ -280,7 +273,7 @@ const Notice = ({ userData }) => {
       await addDoc(collection(db, "notices"), {
         title: newTitle,
         content: newContent,
-        author: userData.name, // ★ 이메일 대신 이름 사용
+        author: userData.name,
         uid: userData.uid,
         date: new Date().toISOString().split("T")[0],
         createdAt: new Date().toISOString(),
@@ -292,6 +285,20 @@ const Notice = ({ userData }) => {
       setNewContent("");
     } catch (error) {
       console.error("에러:", error);
+    }
+  };
+
+  // 삭제 기능 추가
+  const handleDelete = async (id) => {
+    if (window.confirm("정말 이 문의 내역을 삭제하겠나? 복구는 없다.")) {
+      try {
+        await deleteDoc(doc(db, "notices", id));
+        alert("삭제 완료.");
+        setSelectedNotice(null);
+      } catch (error) {
+        console.error("삭제 실패:", error);
+        alert("삭제 중 오류 발생.");
+      }
     }
   };
 
@@ -390,19 +397,34 @@ const Notice = ({ userData }) => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <span className="notice-date">{selectedNotice.date}</span>
-              <button
-                className="modal-close-btn"
-                onClick={() => setSelectedNotice(null)}
-              >
-                닫기 <X size={16} />
-              </button>
+              <div style={{ display: "flex", gap: "10px" }}>
+                {/* 관리자일 경우 삭제 버튼 표시 */}
+                {isAdmin && (
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(selectedNotice.id)}
+                  >
+                    <Trash2 size={16} /> 삭제
+                  </button>
+                )}
+                <button
+                  className="modal-close-btn"
+                  onClick={() => setSelectedNotice(null)}
+                >
+                  닫기 <X size={16} />
+                </button>
+              </div>
             </div>
+
             <h3>{selectedNotice.title}</h3>
+            {/* 작성자 표시부 (간격 수정됨) */}
             <p className="modal-author">작성자: {selectedNotice.author}</p>
+
+            {/* 본문 (간격 수정됨) */}
             <div className="modal-body">{selectedNotice.content}</div>
 
             <div className="reply-section">
-              <h4 style={{ color: "#a855f7", marginBottom: "10px" }}>
+              <h4 style={{ color: "#a855f7", marginBottom: "15px" }}>
                 {isAdmin ? "💬 관리자 답변 작성" : "💬 운영진 답변"}
               </h4>
 
@@ -410,22 +432,23 @@ const Notice = ({ userData }) => {
                 <div
                   style={{
                     background: "#222",
-                    padding: "15px",
+                    padding: "20px",
                     borderRadius: "10px",
                     color: "#e2e8f0",
                     lineHeight: "1.6",
+                    marginTop: "10px",
                   }}
                 >
                   {selectedNotice.reply}
                   <div
                     style={{
-                      marginTop: "10px",
+                      marginTop: "15px",
                       fontSize: "0.8rem",
                       color: "#666",
                       textAlign: "right",
                     }}
                   >
-                    Answered at {selectedNotice.replyDate}
+                    답변일: {selectedNotice.replyDate}
                   </div>
                 </div>
               ) : isAdmin ? (
@@ -450,7 +473,13 @@ const Notice = ({ userData }) => {
                   </button>
                 </div>
               ) : (
-                <div style={{ color: "#666", fontStyle: "italic" }}>
+                <div
+                  style={{
+                    color: "#666",
+                    fontStyle: "italic",
+                    marginTop: "10px",
+                  }}
+                >
                   아직 답변이 없다.
                 </div>
               )}
@@ -511,7 +540,7 @@ const MainHome = () => (
 );
 
 /* =========================================
-   [5] App Shell (라우팅 및 유저 정보 로딩)
+   [5] App Shell
    ========================================= */
 function App() {
   const [userData, setUserData] = useState(null);
@@ -520,7 +549,6 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // 로그인 성공 -> DB에서 추가 정보(이름, 권한) 가져오기
         try {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
@@ -528,7 +556,6 @@ function App() {
           if (docSnap.exists()) {
             setUserData(docSnap.data());
           } else {
-            // 정보가 없으면 기본값 (예외 처리)
             setUserData({
               uid: user.uid,
               email: user.email,
@@ -570,7 +597,6 @@ function App() {
                 <nav className="sidebar">
                   <h1 className="logo">VC</h1>
                   <div className="user-info">
-                    {/* ★ DB에서 가져온 이름과 권한 표시 */}
                     <div className="user-name">{userData.name}</div>
                     <div className="user-role">
                       {userData.role === "admin" ? "관리자" : "빌런"}
@@ -593,7 +619,6 @@ function App() {
                 <main className="content">
                   <Routes>
                     <Route path="/" element={<MainHome />} />
-                    {/* Notice에 유저 정보 전달 */}
                     <Route
                       path="/notice"
                       element={<Notice userData={userData} />}
