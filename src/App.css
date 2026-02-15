@@ -588,39 +588,36 @@ body,
     overflow-y: auto;
   }
 
-  /* ★ 상단바 디자인 개선 (로고 왼쪽, 아이콘 오른쪽 정렬) ★ */
+  /* 상단바 디자인 */
   .sidebar {
     width: 100%;
-    height: 60px; /* 얇은 바 형태 */
+    height: 60px;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start; /* 왼쪽 정렬 시작 */
+    justify-content: flex-start;
     padding: 0 16px;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
-    position: sticky; /* 상단 고정 */
+    position: sticky;
     top: 0;
     z-index: 1000;
     background: rgba(10, 10, 12, 0.95);
     backdrop-filter: blur(10px);
-    gap: 8px; /* 아이콘 간격 */
+    gap: 8px;
   }
 
-  /* 로고: 왼쪽 고정 및 나머지 요소 밀어내기 */
   .sidebar .logo {
     font-size: 1.5rem;
     margin-bottom: 0;
-    margin-right: auto; /* 핵심: 오른쪽 여백을 최대로 써서 나머지를 밈 */
+    margin-right: auto;
   }
 
-  /* 모바일에서 유저 정보(이름표) 숨김 - 깔끔함 유지 */
   .user-info {
     display: none;
   }
 
-  /* 메뉴 아이콘들 */
   .sidebar a {
-    font-size: 0; /* 글자 숨김 */
+    font-size: 0;
     padding: 8px;
     gap: 0;
     border-radius: 8px;
@@ -639,16 +636,11 @@ body,
     color: var(--point-color);
   }
 
-  /* 로그아웃 버튼 */
   .logout-btn {
     margin-top: 0;
     font-size: 0;
     padding: 8px;
-    margin-left: 5px; /* 약간의 구분감 */
-  }
-  .logout-btn svg {
-    width: 24px;
-    height: 24px;
+    margin-left: 5px;
   }
 
   /* 본문 영역 */
@@ -658,26 +650,39 @@ body,
   }
 
   .dashboard-grid {
-    grid-template-columns: 1fr; /* 1열 배치 */
+    grid-template-columns: 1fr;
   }
 
-  /* 타이머 폰트 조절 */
   .timer-display {
     font-size: 1.8rem;
   }
 
-  /* 문의 페이지 헤더 */
+  /* ★ 문의 페이지 헤더 수정 (배지 줄바꿈 방지) ★ */
   .page-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
   }
+
   .header-actions {
     width: 100%;
+    display: flex; /* 명시적 선언 */
     justify-content: space-between;
+    align-items: center;
+    gap: 10px; /* 간격 추가 */
+    flex-wrap: nowrap; /* 줄바꿈 방지 */
   }
+
   .search-bar {
-    width: 100%;
+    width: auto; /* 100% 제거 */
+    flex: 1; /* 남은 공간 차지 */
+  }
+
+  /* 배지 스타일: 줄어들지 않고 한 줄 유지 */
+  .admin-badge,
+  .user-badge {
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .modal-content {
