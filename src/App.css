@@ -425,6 +425,8 @@ body,
   align-items: center;
   gap: 8px;
 }
+
+/* Notice List */
 .notice-list {
   width: 100%;
   max-width: 900px;
@@ -434,6 +436,7 @@ body,
   margin-left: auto;
   margin-right: auto;
 }
+
 .notice-item {
   background: #18181b;
   padding: 20px;
@@ -449,11 +452,39 @@ body,
   border-color: var(--point-color);
   transform: translateX(5px);
 }
+
+/* ★ 수정됨: 문의 내역 텍스트 간격 조정 ★ */
+.notice-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* 날짜, 제목, 작성자 사이 간격 벌림 */
+}
+
+.notice-date {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.notice-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* 제목 텍스트와 배지 사이 간격 벌림 */
+  margin: 0;
+}
+
+.notice-author {
+  font-size: 0.9rem;
+  color: #888;
+}
+
 .status-badge {
   font-size: 0.7rem;
   padding: 3px 8px;
   border-radius: 5px;
-  margin-left: 10px;
+  /* margin-left 제거하고 상위 gap으로 제어 */
+  white-space: nowrap; /* 배지 텍스트 줄바꿈 방지 */
 }
 .status-done {
   background: var(--point-color);
@@ -463,6 +494,8 @@ body,
   background: #333;
   color: #888;
 }
+
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -579,16 +612,19 @@ body,
   .dashboard-grid {
     gap: 15px;
   }
+  .timer-display {
+    font-size: 1.8rem;
+  }
 }
 
-/* 모바일 (768px 이하) - 아이폰 등 */
+/* 모바일 (768px 이하) */
 @media (max-width: 768px) {
   .villain-container {
     flex-direction: column;
     overflow-y: auto;
   }
 
-  /* 상단바 디자인 */
+  /* 상단바 디자인 (로고 왼쪽, 아이콘 오른쪽) */
   .sidebar {
     width: 100%;
     height: 60px;
@@ -642,6 +678,10 @@ body,
     padding: 8px;
     margin-left: 5px;
   }
+  .logout-btn svg {
+    width: 24px;
+    height: 24px;
+  }
 
   /* 본문 영역 */
   .content {
@@ -657,7 +697,7 @@ body,
     font-size: 1.8rem;
   }
 
-  /* ★ 문의 페이지 헤더 수정 (배지 줄바꿈 방지) ★ */
+  /* 문의 페이지 헤더 (배지 줄바꿈 방지) */
   .page-header {
     flex-direction: column;
     align-items: flex-start;
@@ -666,19 +706,19 @@ body,
 
   .header-actions {
     width: 100%;
-    display: flex; /* 명시적 선언 */
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px; /* 간격 추가 */
-    flex-wrap: nowrap; /* 줄바꿈 방지 */
+    gap: 10px;
+    flex-wrap: nowrap;
   }
 
   .search-bar {
-    width: auto; /* 100% 제거 */
-    flex: 1; /* 남은 공간 차지 */
+    width: auto;
+    flex: 1;
   }
 
-  /* 배지 스타일: 줄어들지 않고 한 줄 유지 */
+  /* 배지 스타일 줄바꿈 방지 */
   .admin-badge,
   .user-badge {
     flex-shrink: 0;
