@@ -1,6 +1,3 @@
-/* =========================================
-   1. 기본 설정 (Reset)
-   ========================================= */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -24,7 +21,6 @@ body,
   overflow: hidden;
 }
 
-/* Auth */
 .auth-container {
   position: fixed;
   top: 0;
@@ -113,7 +109,6 @@ body,
   margin-top: 5px;
 }
 
-/* Layout */
 .villain-container {
   display: flex;
   width: 100vw;
@@ -203,7 +198,6 @@ body,
   align-items: center;
 }
 
-/* MainHome Dashboard */
 .main-home-wrapper {
   width: 100%;
   max-width: 1000px;
@@ -328,7 +322,6 @@ body,
   }
 }
 
-/* Notice Page */
 .notice-page {
   width: 100%;
   display: flex;
@@ -595,9 +588,6 @@ body,
   }
 }
 
-/* =========================================
-   7. 비밀 게시판 (Secret Board)
-   ========================================= */
 .secret-board {
   width: 100%;
   max-width: 900px;
@@ -847,45 +837,81 @@ body,
   cursor: pointer;
 }
 
-/* Logout Modal */
-.logout-modal-box {
-  background: #18181b;
-  padding: 25px;
-  border-radius: 15px;
-  border: 1px solid #333;
-  text-align: center;
-  min-width: 300px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-}
-.logout-modal-box h3 {
-  margin-bottom: 25px;
-  color: white;
-}
-.logout-btn-group {
+.custom-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
-  gap: 15px;
+  align-items: center;
+  z-index: 20000;
+}
+.custom-modal-box {
+  background: #18181b;
+  width: 90%;
+  max-width: 320px;
+  padding: 30px 20px;
+  border-radius: 20px;
+  border: 1px solid var(--point-color);
+  text-align: center;
+  box-shadow: 0 0 50px rgba(168, 85, 247, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.modal-icon {
+  background: rgba(168, 85, 247, 0.1);
+  padding: 15px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-message {
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  word-break: keep-all;
+  line-height: 1.5;
+}
+.modal-input {
+  width: 100%;
+  background: #0a0a0c;
+  border: 1px solid #333;
+  padding: 12px;
+  border-radius: 8px;
+  color: white;
+  outline: none;
+  font-size: 16px;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+.modal-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  font-size: 0.95rem;
 }
 .btn-cancel {
-  background: #333;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
+  background: #27272a;
+  color: #a1a1aa;
 }
 .btn-confirm {
-  background: #ff4444;
+  background: var(--point-color);
   color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
   .sidebar {
     width: 200px;
@@ -993,17 +1019,14 @@ body,
   .creator-row {
     flex-direction: column;
   }
-
   input,
   textarea {
     font-size: 16px !important;
   }
-
   .admin-form {
     padding: 20px;
     width: 100%;
   }
-
   .chat-room {
     position: fixed;
     top: 60px;
@@ -1015,12 +1038,10 @@ body,
     border: none;
     z-index: 50;
   }
-
   .chat-body {
     flex: 1;
     overflow-y: auto;
   }
-
   .chat-input-area {
     position: sticky;
     bottom: 0;

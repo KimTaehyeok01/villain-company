@@ -19,6 +19,7 @@ import {
   X,
   Send,
   Lock,
+  Unlock,
   UserPlus,
   LogIn,
   ArrowLeft,
@@ -29,6 +30,8 @@ import {
   CheckCircle,
   Plus,
   Users,
+  AlertCircle,
+  AlertTriangle,
 } from "lucide-react";
 import "./App.css";
 
@@ -54,12 +57,72 @@ import {
   updateProfile,
 } from "firebase/auth";
 
+const CustomModal = ({
+  isOpen,
+  type,
+  message,
+  onConfirm,
+  onCancel,
+  inputPlaceholder,
+}) => {
+  const [inputValue, setInputValue] = useState("");
+
+  if (!isOpen) return null;
+
+  const handleConfirm = () => {
+    if (onConfirm) onConfirm(inputValue);
+    setInputValue("");
+  };
+
+  const handleCancel = () => {
+    if (onCancel) onCancel();
+    setInputValue("");
+  };
+
+  return (
+    <div className="modal-overlay custom-alert-overlay">
+      <div className="custom-modal-box fade-in">
+        <div className="modal-icon">
+          {type === "confirm" || type === "prompt" || type === "alert" ? (
+            <AlertTriangle size={40} color="#a855f7" />
+          ) : (
+            <CheckCircle size={40} color="#00ff00" />
+          )}
+        </div>
+        <p className="modal-message">{message}</p>
+
+        {type === "prompt" && (
+          <input
+            type="password"
+            className="modal-input"
+            placeholder={inputPlaceholder}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+          />
+        )}
+
+        <div className="modal-actions">
+          {(type === "confirm" || type === "prompt") && (
+            <button className="btn-cancel" onClick={handleCancel}>
+              취소
+            </button>
+          )}
+          <button className="btn-confirm" onClick={handleConfirm}>
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SignupPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [modal, setModal] = useState({ isOpen: false, type: "", message: "" });
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
@@ -90,8 +153,13 @@ const SignupPage = () => {
         lastCheckIn: "",
         createdAt: new Date().toISOString(),
       });
-      alert(`환영한다, ${name}. 다시 로그인해라.`);
-      navigate("/login");
+
+      setModal({
+        isOpen: true,
+        type: "success",
+        message: `환영한다, ${name}. 다시 로그인해라.`,
+        onConfirm: () => navigate("/login"),
+      });
     } catch (error) {
       console.error(error);
       setErrorMsg("가입 실패.");
@@ -100,6 +168,15 @@ const SignupPage = () => {
 
   return (
     <div className="auth-container fade-in">
+      <CustomModal
+        isOpen={modal.isOpen}
+        type={modal.type}
+        message={modal.message}
+        onConfirm={() => {
+          if (modal.onConfirm) modal.onConfirm();
+          setModal({ ...modal, isOpen: false });
+        }}
+      />
       <div className="auth-box">
         <h1 className="logo">
           VC <span style={{ fontSize: "1rem", color: "#666" }}>JOIN</span>
@@ -222,6 +299,12 @@ const Notice = ({ userData }) => {
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [replyContent, setReplyContent] = useState("");
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+  });
 
   useEffect(() => {
     const q = query(collection(db, "notices"), orderBy("createdAt", "desc"));
@@ -232,7 +315,15 @@ const Notice = ({ userData }) => {
   }, []);
 
   const addNotice = async () => {
-    if (!newTitle || !newContent) return alert("내용을 입력해라.");
+    if (!newTitle || !newContent) {
+      setModal({
+        isOpen: true,
+        type: "alert",
+        message: "내용을 입력해라.",
+        onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
+      return;
+    }
     try {
       await addDoc(collection(db, "notices"), {
         title: newTitle,
@@ -244,7 +335,12 @@ const Notice = ({ userData }) => {
         reply: "",
         isAnswered: false,
       });
-      alert("문의 접수 완료.");
+      setModal({
+        isOpen: true,
+        type: "success",
+        message: "문의 접수 완료.",
+        onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
       setNewTitle("");
       setNewContent("");
     } catch (error) {
@@ -252,20 +348,43 @@ const Notice = ({ userData }) => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("정말 이 문의 내역을 삭제하겠나? 복구는 없다.")) {
-      try {
-        await deleteDoc(doc(db, "notices", id));
-        alert("삭제 완료.");
-        setSelectedNotice(null);
-      } catch (error) {
-        alert("삭제 오류.");
-      }
-    }
+  const handleDelete = (id) => {
+    setModal({
+      isOpen: true,
+      type: "confirm",
+      message: "정말 이 문의 내역을 삭제하겠나? 복구는 없다.",
+      onConfirm: async () => {
+        try {
+          await deleteDoc(doc(db, "notices", id));
+          setModal({
+            isOpen: true,
+            type: "success",
+            message: "삭제 완료.",
+            onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+          });
+          setSelectedNotice(null);
+        } catch (error) {
+          setModal({
+            isOpen: true,
+            type: "alert",
+            message: "삭제 오류.",
+            onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+          });
+        }
+      },
+    });
   };
 
   const handleReplySubmit = async () => {
-    if (!replyContent) return alert("답변을 입력해라.");
+    if (!replyContent) {
+      setModal({
+        isOpen: true,
+        type: "alert",
+        message: "답변을 입력해라.",
+        onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
+      return;
+    }
     try {
       const noticeRef = doc(db, "notices", selectedNotice.id);
       await updateDoc(noticeRef, {
@@ -273,7 +392,12 @@ const Notice = ({ userData }) => {
         replyDate: new Date().toISOString().split("T")[0],
         isAnswered: true,
       });
-      alert("답변 완료.");
+      setModal({
+        isOpen: true,
+        type: "success",
+        message: "답변 완료.",
+        onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
       setReplyContent("");
       setSelectedNotice(null);
     } catch (error) {
@@ -283,6 +407,17 @@ const Notice = ({ userData }) => {
 
   return (
     <div className="fade-in notice-page">
+      <CustomModal
+        isOpen={modal.isOpen}
+        type={modal.type}
+        message={modal.message}
+        onConfirm={(val) => {
+          if (modal.onConfirm) modal.onConfirm(val);
+          setModal({ ...modal, isOpen: false });
+        }}
+        onCancel={() => setModal({ ...modal, isOpen: false })}
+      />
+
       <div className="page-header">
         <h2>🚨 절대 문의 사항</h2>
         <div className="header-actions">
@@ -447,6 +582,12 @@ const MainHome = ({ userData, setUserData }) => {
     `[SECURITY] 방화벽 4단계 가동 완료.`,
     `[NOTICE] 새로운 지령을 대기하십시오.`,
   ]);
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+  });
 
   const todayStr = new Date().toISOString().split("T")[0];
   const isCheckedIn = userData?.lastCheckIn === todayStr;
@@ -466,8 +607,15 @@ const MainHome = ({ userData, setUserData }) => {
   }, []);
 
   const handleReport = async () => {
-    if (isCheckedIn)
-      return alert("오늘은 이미 생존 인증을 마쳤다. 내일 다시 보고해라.");
+    if (isCheckedIn) {
+      setModal({
+        isOpen: true,
+        type: "alert",
+        message: "오늘은 이미 생존 인증을 마쳤다. 내일 다시 보고해라.",
+        onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
+      return;
+    }
 
     try {
       const userRef = doc(db, "users", userData.uid);
@@ -476,14 +624,33 @@ const MainHome = ({ userData, setUserData }) => {
       const time = new Date().toLocaleTimeString();
       const newLog = `[INFO] ${userData.name} 빌런 생존 보고 완료. (${time})`;
       setLogs((prev) => [newLog, ...prev.slice(0, 7)]);
-      alert("생존 인증 완료. 활동 마크가 부여되었다.");
+      setModal({
+        isOpen: true,
+        type: "success",
+        message: "생존 인증 완료. 활동 마크가 부여되었다.",
+        onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
     } catch (error) {
-      alert("통신 에러. 다시 시도해라.");
+      setModal({
+        isOpen: true,
+        type: "alert",
+        message: "통신 에러. 다시 시도해라.",
+        onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
     }
   };
 
   return (
     <div className="fade-in main-home-wrapper">
+      <CustomModal
+        isOpen={modal.isOpen}
+        type={modal.type}
+        message={modal.message}
+        onConfirm={() => {
+          if (modal.onConfirm) modal.onConfirm();
+          setModal({ ...modal, isOpen: false });
+        }}
+      />
       <div className="main-header">
         <h2>Welcome to Villain Co.</h2>
         <p className="status-text">
@@ -576,6 +743,14 @@ const SecretBoard = ({ userData }) => {
   const [newRoomPassword, setNewRoomPassword] = useState("");
   const scrollRef = useRef();
 
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+    inputPlaceholder: "",
+  });
+
   useEffect(() => {
     const q = query(collection(db, "chatRooms"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -601,8 +776,24 @@ const SecretBoard = ({ userData }) => {
   }, [currentRoom]);
 
   const createRoom = async () => {
-    if (!newRoomName.trim()) return alert("방 이름을 입력해라.");
-    if (newIsPrivate && !newRoomPassword) return alert("비밀번호를 설정해라.");
+    if (!newRoomName.trim()) {
+      setModal({
+        isOpen: true,
+        type: "alert",
+        message: "방 이름을 입력해라.",
+        onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
+      return;
+    }
+    if (newIsPrivate && !newRoomPassword) {
+      setModal({
+        isOpen: true,
+        type: "alert",
+        message: "비밀번호를 설정해라.",
+        onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+      });
+      return;
+    }
     await addDoc(collection(db, "chatRooms"), {
       name: newRoomName,
       maxParticipants: Number(newMaxPeople),
@@ -620,38 +811,93 @@ const SecretBoard = ({ userData }) => {
 
   const handleJoinRoom = (room) => {
     if (room.isPrivate) {
-      const inputPwd = prompt("🔒 비밀 작전 방이다. 암구호(비밀번호)를 대라.");
-      if (inputPwd === room.password) {
-        setCurrentRoom(room);
-      } else {
-        alert("암구호가 틀렸다. 접근 거부.");
-      }
+      setModal({
+        isOpen: true,
+        type: "prompt",
+        message: "🔒 비밀 작전 방이다. 암구호(비밀번호)를 대라.",
+        inputPlaceholder: "암구호 입력",
+        onConfirm: (inputPwd) => {
+          if (inputPwd === room.password) {
+            setCurrentRoom(room);
+            setModal((prev) => ({ ...prev, isOpen: false }));
+          } else {
+            setModal({
+              isOpen: true,
+              type: "alert",
+              message: "암구호가 틀렸다. 접근 거부.",
+              onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+            });
+          }
+        },
+      });
     } else {
       setCurrentRoom(room);
     }
   };
 
-  const handleDeleteRoom = async (e, room) => {
+  const handleDeleteRoom = (e, room) => {
     e.stopPropagation();
+
     if (room.isPrivate) {
-      const inputPwd = prompt(
-        "🔒 이 방은 잠겨있다. 삭제하려면 비밀번호를 입력해라.",
-      );
-      if (inputPwd === null) return;
-      if (inputPwd !== room.password) {
-        return alert("비밀번호가 틀렸다. 삭제 불가.");
-      }
+      setModal({
+        isOpen: true,
+        type: "prompt",
+        message: "🔒 이 방은 잠겨있다. 삭제하려면 비밀번호를 입력해라.",
+        inputPlaceholder: "비밀번호 입력",
+        onConfirm: async (inputPwd) => {
+          if (inputPwd === room.password) {
+            try {
+              await deleteDoc(doc(db, "chatRooms", room.id));
+              setModal({
+                isOpen: true,
+                type: "success",
+                message: "방이 제거되었다.",
+                onConfirm: () =>
+                  setModal((prev) => ({ ...prev, isOpen: false })),
+              });
+            } catch (error) {
+              setModal({
+                isOpen: true,
+                type: "alert",
+                message: "삭제 중 오류 발생.",
+                onConfirm: () =>
+                  setModal((prev) => ({ ...prev, isOpen: false })),
+              });
+            }
+          } else {
+            setModal({
+              isOpen: true,
+              type: "alert",
+              message: "비밀번호가 틀렸다. 삭제 불가.",
+              onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+            });
+          }
+        },
+      });
     } else {
-      if (!window.confirm("이 작전 방을 폭파하겠나? 복구 불가능하다.")) {
-        return;
-      }
-    }
-    try {
-      await deleteDoc(doc(db, "chatRooms", room.id));
-      alert("방이 제거되었다.");
-    } catch (error) {
-      console.error("삭제 실패:", error);
-      alert("삭제 중 오류 발생.");
+      setModal({
+        isOpen: true,
+        type: "confirm",
+        message: "이 작전 방을 폭파하겠나? 복구 불가능하다.",
+        onConfirm: async () => {
+          try {
+            await deleteDoc(doc(db, "chatRooms", room.id));
+            setModal({
+              isOpen: true,
+              type: "success",
+              message: "방이 제거되었다.",
+              onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+            });
+          } catch (error) {
+            setModal({
+              isOpen: true,
+              type: "alert",
+              message: "삭제 중 오류 발생.",
+              onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
+            });
+          }
+        },
+      });
     }
   };
 
@@ -670,6 +916,14 @@ const SecretBoard = ({ userData }) => {
   if (!currentRoom) {
     return (
       <div className="fade-in secret-board">
+        <CustomModal
+          isOpen={modal.isOpen}
+          type={modal.type}
+          message={modal.message}
+          inputPlaceholder={modal.inputPlaceholder}
+          onConfirm={modal.onConfirm}
+          onCancel={() => setModal({ ...modal, isOpen: false })}
+        />
         <div className="page-header">
           <h2>💬 비밀 접선 장소</h2>
           <button
@@ -813,7 +1067,12 @@ const SecretBoard = ({ userData }) => {
 function App() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [modal, setModal] = useState({
+    isOpen: false,
+    type: "",
+    message: "",
+    onConfirm: null,
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -839,16 +1098,15 @@ function App() {
 
   const handleLogoutClick = (e) => {
     e.preventDefault();
-    setShowLogoutConfirm(true);
-  };
-
-  const confirmLogout = () => {
-    signOut(auth);
-    setShowLogoutConfirm(false);
-  };
-
-  const cancelLogout = () => {
-    setShowLogoutConfirm(false);
+    setModal({
+      isOpen: true,
+      type: "confirm",
+      message: "로그아웃 하시겠습니까?",
+      onConfirm: () => {
+        signOut(auth);
+        setModal({ ...modal, isOpen: false });
+      },
+    });
   };
 
   if (loading) return <div className="loading-screen">시스템 로딩 중...</div>;
@@ -870,6 +1128,14 @@ function App() {
             path="*"
             element={
               <div className="villain-container">
+                <CustomModal
+                  isOpen={modal.isOpen}
+                  type={modal.type}
+                  message={modal.message}
+                  onConfirm={modal.onConfirm}
+                  onCancel={() => setModal({ ...modal, isOpen: false })}
+                />
+
                 <nav className="sidebar">
                   <h1 className="logo">VC</h1>
                   <div className="user-info">
@@ -925,22 +1191,6 @@ function App() {
                     <Route path="*" element={<Navigate to="/" />} />
                   </Routes>
                 </main>
-
-                {showLogoutConfirm && (
-                  <div className="modal-overlay">
-                    <div className="logout-modal-box">
-                      <h3>로그아웃 하시겠습니까?</h3>
-                      <div className="logout-btn-group">
-                        <button className="btn-cancel" onClick={cancelLogout}>
-                          취소
-                        </button>
-                        <button className="btn-confirm" onClick={confirmLogout}>
-                          확인
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             }
           />
