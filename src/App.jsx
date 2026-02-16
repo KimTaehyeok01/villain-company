@@ -19,7 +19,6 @@ import {
   X,
   Send,
   Lock,
-  Unlock,
   UserPlus,
   LogIn,
   ArrowLeft,
@@ -30,11 +29,9 @@ import {
   CheckCircle,
   Plus,
   Users,
-  Key,
 } from "lucide-react";
 import "./App.css";
 
-// --- Firebase 설정 ---
 import { db, auth } from "./firebase";
 import {
   collection,
@@ -57,9 +54,6 @@ import {
   updateProfile,
 } from "firebase/auth";
 
-/* =========================================
-   [1] 회원가입 페이지
-   ========================================= */
 const SignupPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -169,9 +163,6 @@ const SignupPage = () => {
   );
 };
 
-/* =========================================
-   [2] 로그인 페이지
-   ========================================= */
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -223,9 +214,6 @@ const LoginPage = () => {
   );
 };
 
-/* =========================================
-   [3] 문의 게시판 (Notice)
-   ========================================= */
 const Notice = ({ userData }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNotice, setSelectedNotice] = useState(null);
@@ -452,9 +440,6 @@ const Notice = ({ userData }) => {
   );
 };
 
-/* =========================================
-   [4] 메인 대시보드
-   ========================================= */
 const MainHome = ({ userData, setUserData }) => {
   const [timeLeft, setTimeLeft] = useState("");
   const [logs, setLogs] = useState([
@@ -579,9 +564,6 @@ const MainHome = ({ userData, setUserData }) => {
   );
 };
 
-/* =========================================
-   [5] 비밀 게시판 (SecretBoard)
-   ========================================= */
 const SecretBoard = ({ userData }) => {
   const [rooms, setRooms] = useState([]);
   const [currentRoom, setCurrentRoom] = useState(null);
@@ -649,30 +631,21 @@ const SecretBoard = ({ userData }) => {
     }
   };
 
-  // ★ 수정된 방 삭제 로직 ★
   const handleDeleteRoom = async (e, room) => {
-    e.stopPropagation(); // 부모 클릭 방지
-
-    // 1. 비공개 방 (비밀번호 있음)
+    e.stopPropagation();
     if (room.isPrivate) {
       const inputPwd = prompt(
         "🔒 이 방은 잠겨있다. 삭제하려면 비밀번호를 입력해라.",
       );
-      if (inputPwd === null) return; // 취소 누름
-
+      if (inputPwd === null) return;
       if (inputPwd !== room.password) {
         return alert("비밀번호가 틀렸다. 삭제 불가.");
       }
-      // 비밀번호 맞으면 아래 삭제 로직 진행
-    }
-    // 2. 공개 방 (비밀번호 없음) - 단순 확인
-    else {
+    } else {
       if (!window.confirm("이 작전 방을 폭파하겠나? 복구 불가능하다.")) {
         return;
       }
     }
-
-    // 실제 삭제 실행
     try {
       await deleteDoc(doc(db, "chatRooms", room.id));
       alert("방이 제거되었다.");
@@ -776,7 +749,6 @@ const SecretBoard = ({ userData }) => {
                     )}
                   </div>
                 </div>
-                {/* ★ 삭제 버튼: room 전체 객체를 넘기도록 수정됨 ★ */}
                 {(room.createdBy === userData.uid ||
                   userData.role === "admin") && (
                   <button
@@ -838,12 +810,10 @@ const SecretBoard = ({ userData }) => {
   );
 };
 
-/* =========================================
-   [6] App Shell
-   ========================================= */
 function App() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -866,6 +836,20 @@ function App() {
     });
     return () => unsubscribe();
   }, []);
+
+  const handleLogoutClick = (e) => {
+    e.preventDefault();
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    signOut(auth);
+    setShowLogoutConfirm(false);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
+  };
 
   if (loading) return <div className="loading-screen">시스템 로딩 중...</div>;
 
@@ -912,10 +896,11 @@ function App() {
                   </Link>
                   <a
                     href="#"
-                    onClick={() => signOut(auth)}
+                    onClick={handleLogoutClick}
                     className="logout-btn"
+                    style={{ color: "#ff4444" }}
                   >
-                    <Lock /> 로그아웃
+                    <Lock color="#ff4444" /> 로그아웃
                   </a>
                 </nav>
                 <main className="content">
@@ -940,6 +925,22 @@ function App() {
                     <Route path="*" element={<Navigate to="/" />} />
                   </Routes>
                 </main>
+
+                {showLogoutConfirm && (
+                  <div className="modal-overlay">
+                    <div className="logout-modal-box">
+                      <h3>로그아웃 하시겠습니까?</h3>
+                      <div className="logout-btn-group">
+                        <button className="btn-cancel" onClick={cancelLogout}>
+                          취소
+                        </button>
+                        <button className="btn-confirm" onClick={confirmLogout}>
+                          확인
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             }
           />

@@ -340,12 +340,16 @@ body,
   max-width: 900px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   margin-bottom: 30px;
   border-bottom: 1px solid #222;
   padding-bottom: 20px;
   margin-left: auto;
   margin-right: auto;
+}
+.page-header h2 {
+  margin: 0;
+  white-space: nowrap;
 }
 .header-actions {
   display: flex;
@@ -425,8 +429,6 @@ body,
   align-items: center;
   gap: 8px;
 }
-
-/* Notice List */
 .notice-list {
   width: 100%;
   max-width: 900px;
@@ -436,7 +438,6 @@ body,
   margin-left: auto;
   margin-right: auto;
 }
-
 .notice-item {
   background: #18181b;
   padding: 20px;
@@ -452,41 +453,34 @@ body,
   border-color: var(--point-color);
   transform: translateX(5px);
 }
-
-/* ★ 수정됨: 문의 내역 텍스트 간격 조정 ★ */
 .notice-info {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* 날짜, 제목, 작성자 사이 간격 벌림 */
-  align-items: flex-start; /* 왼쪽 정렬 확실하게 */
+  gap: 8px;
+  align-items: flex-start;
 }
-
 .notice-date {
   font-size: 0.85rem;
   color: #666;
 }
-
-/* 제목과 배지 한 줄 정렬 */
 .notice-title {
   font-size: 1.1rem;
   font-weight: bold;
   display: flex;
-  align-items: center; /* 세로 중앙 정렬 */
-  gap: 10px; /* 제목 텍스트와 배지 사이 간격 벌림 */
+  align-items: center;
+  gap: 10px;
   margin: 0;
-  flex-wrap: wrap; /* 모바일에서 너무 길면 줄바꿈 허용 */
+  flex-wrap: wrap;
 }
-
 .notice-author {
   font-size: 0.9rem;
   color: #888;
 }
-
 .status-badge {
   font-size: 0.7rem;
   padding: 3px 8px;
   border-radius: 5px;
-  white-space: nowrap; /* 배지 텍스트 줄바꿈 방지 */
+  white-space: nowrap;
 }
 .status-done {
   background: var(--point-color);
@@ -496,8 +490,6 @@ body,
   background: #333;
   color: #888;
 }
-
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -604,7 +596,7 @@ body,
 }
 
 /* =========================================
-   7. 비밀 게시판 (Secret Board) - 기능 강화
+   7. 비밀 게시판 (Secret Board)
    ========================================= */
 .secret-board {
   width: 100%;
@@ -625,8 +617,6 @@ body,
   align-items: center;
   gap: 8px;
 }
-
-/* 방 생성기 스타일 */
 .room-creator {
   width: 100%;
   background: #18181b;
@@ -687,8 +677,6 @@ body,
   cursor: pointer;
   width: 100%;
 }
-
-/* 방 목록 스타일 */
 .room-list {
   width: 100%;
   display: flex;
@@ -754,8 +742,6 @@ body,
 .room-delete-btn:hover {
   color: #ff4444;
 }
-
-/* Chat Room */
 .chat-room {
   width: 100%;
   max-width: 600px;
@@ -859,6 +845,44 @@ body,
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+
+/* Logout Modal */
+.logout-modal-box {
+  background: #18181b;
+  padding: 25px;
+  border-radius: 15px;
+  border: 1px solid #333;
+  text-align: center;
+  min-width: 300px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+.logout-modal-box h3 {
+  margin-bottom: 25px;
+  color: white;
+}
+.logout-btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+.btn-cancel {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.btn-confirm {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 /* Responsive */
