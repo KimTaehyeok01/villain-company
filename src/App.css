@@ -990,14 +990,39 @@ body,
     padding: 30px 20px;
     width: 90%;
   }
+  .creator-row {
+    flex-direction: column;
+  }
+  input,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  .admin-form {
+    padding: 20px;
+    width: 100%;
+  }
+
   .chat-room {
     height: calc(100vh - 120px);
     border-radius: 0;
     margin-top: 0;
     width: 100%;
     border: none;
-  }
-  .creator-row {
+    display: flex;
     flex-direction: column;
+  }
+
+  .chat-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .chat-input-area {
+    position: sticky;
+    bottom: 0;
+    background: #18181b;
+    z-index: 10;
+    padding: 10px;
   }
 }
