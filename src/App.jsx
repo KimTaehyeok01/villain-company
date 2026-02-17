@@ -955,14 +955,25 @@ const SecretBoard = ({ userData }) => {
               />
             </div>
             <div className="creator-row">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={newIsPrivate}
-                  onChange={(e) => setNewIsPrivate(e.target.checked)}
-                />
-                <span>🔒 비공개 설정</span>
-              </label>
+              <div className="toggle-wrapper">
+                <div className="toggle-info">
+                  {newIsPrivate ? (
+                    <Lock size={18} color="#ff4444" />
+                  ) : (
+                    <Unlock size={18} color="#888" />
+                  )}
+                  <span>비공개 설정</span>
+                </div>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={newIsPrivate}
+                    onChange={(e) => setNewIsPrivate(e.target.checked)}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
+
               {newIsPrivate && (
                 <input
                   type="password"

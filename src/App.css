@@ -641,13 +641,64 @@ body,
   border-radius: 8px;
   outline: none;
 }
-.checkbox-label {
+
+.toggle-wrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #aaa;
-  cursor: pointer;
+  gap: 15px;
+  background: #0a0a0c;
+  padding: 8px 15px;
+  border-radius: 10px;
+  border: 1px solid #222;
 }
+.toggle-info {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* 아이콘과 글자 사이 간격 확보 */
+  font-size: 0.9rem;
+  color: #aaa;
+  white-space: nowrap; /* 글자 줄바꿈 방지 */
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333;
+  transition: 0.3s;
+  border-radius: 34px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: var(--point-color);
+}
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
 .input-pwd {
   flex: 1;
   background: #0a0a0c;
