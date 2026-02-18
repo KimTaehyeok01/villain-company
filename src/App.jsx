@@ -33,6 +33,8 @@ import {
   AlertCircle,
   AlertTriangle,
   Gamepad2,
+  Trophy, // 랭킹 아이콘 추가
+  Medal, // 메달 아이콘 추가
 } from "lucide-react";
 import "./App.css";
 
@@ -49,6 +51,8 @@ import {
   setDoc,
   getDoc,
   serverTimestamp,
+  limit, // 랭킹 제한용
+  increment, // 점수 증가용
 } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
@@ -58,6 +62,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 
+// --- [모달 컴포넌트] ---
 const CustomModal = ({
   isOpen,
   type,
@@ -117,6 +122,7 @@ const CustomModal = ({
   );
 };
 
+// --- [회원가입 페이지] ---
 const SignupPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -241,6 +247,7 @@ const SignupPage = () => {
   );
 };
 
+// --- [로그인 페이지] ---
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -292,6 +299,7 @@ const LoginPage = () => {
   );
 };
 
+// --- [공지사항 컴포넌트] ---
 const Notice = ({ userData }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNotice, setSelectedNotice] = useState(null);
@@ -576,6 +584,7 @@ const Notice = ({ userData }) => {
   );
 };
 
+// --- [메인 홈 컴포넌트] ---
 const MainHome = ({ userData, setUserData }) => {
   const [timeLeft, setTimeLeft] = useState("");
   const [logs, setLogs] = useState([
@@ -732,6 +741,7 @@ const MainHome = ({ userData, setUserData }) => {
   );
 };
 
+// --- [비밀 게시판 컴포넌트] ---
 const SecretBoard = ({ userData }) => {
   const [rooms, setRooms] = useState([]);
   const [currentRoom, setCurrentRoom] = useState(null);
@@ -1076,15 +1086,50 @@ const SecretBoard = ({ userData }) => {
   );
 };
 
-const PingPongGame = () => {
+// --- [핑퐁 게임 컴포넌트 (랭킹 기능 추가)] ---
+const PingPongGame = ({ userData }) => {
   const canvasRef = useRef(null);
   const [score, setScore] = useState({ player: 0, ai: 0 });
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [winner, setWinner] = useState("");
+  const [ranks, setRanks] = useState([]); // 랭킹 데이터 상태
 
   const ballRef = useRef({ x: 300, y: 200, dx: 5, dy: 5, speed: 7 });
   const paddleRef = useRef({ y: 150, aiY: 150 });
+
+  // 랭킹 데이터 불러오기 (실시간)
+  useEffect(() => {
+    const q = query(
+      collection(db, "gameScores"),
+      orderBy("wins", "desc"),
+      limit(10), // 상위 10명만
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setRanks(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 게임 승리 시 점수 업데이트 로직
+  const updateRankScore = async () => {
+    try {
+      const scoreRef = doc(db, "gameScores", userData.uid);
+      await setDoc(
+        scoreRef,
+        {
+          name: userData.name,
+          uid: userData.uid,
+          wins: increment(1), // 기존 점수에 +1
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true },
+      );
+      console.log("점수 업데이트 완료");
+    } catch (error) {
+      console.error("점수 업데이트 실패:", error);
+    }
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1175,6 +1220,7 @@ const PingPongGame = () => {
     if (score.player >= 3) {
       setGameOver(true);
       setWinner("빌런 승리!");
+      updateRankScore(); // 플레이어 승리 시 DB 업데이트
     } else if (score.ai >= 3) {
       setGameOver(true);
       setWinner("AI 승리... 훈련 더 해라.");
@@ -1217,41 +1263,77 @@ const PingPongGame = () => {
         <h2>🏓 지옥의 핑퐁 훈련소</h2>
       </div>
 
-      <div className="score-board">
-        <span className="player-score">나: {score.player}</span>
-        <span className="ai-score">AI: {score.ai}</span>
-      </div>
-
-      <div className="canvas-wrapper">
-        <canvas
-          ref={canvasRef}
-          width={600}
-          height={400}
-          onMouseMove={handleMouseMove}
-          onTouchMove={handleTouchMove}
-          className="game-canvas"
-        />
-        {(!gameStarted || gameOver) && (
-          <div className="game-overlay">
-            {gameOver ? <h3>{winner}</h3> : <h3>준비됐나?</h3>}
-            <button
-              onClick={() => {
-                setScore({ player: 0, ai: 0 });
-                setGameOver(false);
-                setGameStarted(true);
-                resetBall();
-              }}
-            >
-              {gameOver ? "재도전" : "훈련 시작"}
-            </button>
+      <div className="game-content-wrapper">
+        {/* 왼쪽: 게임 화면 */}
+        <div className="game-section">
+          <div className="score-board">
+            <span className="player-score">나: {score.player}</span>
+            <span className="ai-score">AI: {score.ai}</span>
           </div>
-        )}
+
+          <div className="canvas-wrapper">
+            <canvas
+              ref={canvasRef}
+              width={600}
+              height={400}
+              onMouseMove={handleMouseMove}
+              onTouchMove={handleTouchMove}
+              className="game-canvas"
+            />
+            {(!gameStarted || gameOver) && (
+              <div className="game-overlay">
+                {gameOver ? <h3>{winner}</h3> : <h3>준비됐나?</h3>}
+                <button
+                  onClick={() => {
+                    setScore({ player: 0, ai: 0 });
+                    setGameOver(false);
+                    setGameStarted(true);
+                    resetBall();
+                  }}
+                >
+                  {gameOver ? "재도전" : "훈련 시작"}
+                </button>
+              </div>
+            )}
+          </div>
+          <p className="game-desc">PC: 마우스 이동 / Mobile: 터치 이동</p>
+        </div>
+
+        {/* 오른쪽: 랭킹 보드 */}
+        <div className="ranking-section">
+          <div className="ranking-board">
+            <div className="rank-header">
+              <Trophy size={20} color="#ffd700" />
+              <h3>전투력 랭킹 (승리 수)</h3>
+            </div>
+            <ul className="rank-list">
+              {ranks.length > 0 ? (
+                ranks.map((rank, index) => (
+                  <li key={rank.id} className="rank-item">
+                    <div className="rank-num">
+                      {index === 0 && <Medal size={16} color="#ffd700" />}
+                      {index === 1 && <Medal size={16} color="#c0c0c0" />}
+                      {index === 2 && <Medal size={16} color="#cd7f32" />}
+                      {index > 2 && (
+                        <span className="num-text">{index + 1}</span>
+                      )}
+                    </div>
+                    <div className="rank-name">{rank.name}</div>
+                    <div className="rank-score">{rank.wins}승</div>
+                  </li>
+                ))
+              ) : (
+                <li className="no-rank">데이터 없음</li>
+              )}
+            </ul>
+          </div>
+        </div>
       </div>
-      <p className="game-desc">PC: 마우스 이동 / Mobile: 터치 이동</p>
     </div>
   );
 };
 
+// --- [App 메인] ---
 function App() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -1379,7 +1461,10 @@ function App() {
                       path="/board"
                       element={<SecretBoard userData={userData} />}
                     />
-                    <Route path="/game" element={<PingPongGame />} />
+                    <Route
+                      path="/game"
+                      element={<PingPongGame userData={userData} />}
+                    />
                     <Route path="*" element={<Navigate to="/" />} />
                   </Routes>
                 </main>
