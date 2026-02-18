@@ -14,6 +14,7 @@ import {
   Lock,
   CheckCircle,
   Settings,
+  User,
 } from "lucide-react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
@@ -104,19 +105,39 @@ function App() {
 
                 <nav className="sidebar">
                   <h1 className="logo">VC</h1>
+
                   <div className="user-info">
-                    <div className="user-name">
-                      {userData.name}
-                      {isCheckedIn && (
-                        <span className="checkin-badge">
-                          <CheckCircle size={12} /> 활동 중
-                        </span>
+                    {/* 사진 영역 */}
+                    <div className="user-profile-container">
+                      {userData.photoURL ? (
+                        <img
+                          src={userData.photoURL}
+                          alt="프로필"
+                          className="user-profile-img"
+                        />
+                      ) : (
+                        <div className="user-profile-placeholder">
+                          <User size={24} color="#888" />
+                        </div>
                       )}
                     </div>
-                    <div className="user-role">
-                      {userData.role === "admin" ? "관리자" : "빌런"}
+
+                    {/* 이름 및 역할 텍스트 영역 */}
+                    <div className="user-details">
+                      <div className="user-name">
+                        {userData.name}
+                        {isCheckedIn && (
+                          <span className="checkin-badge">
+                            <CheckCircle size={10} /> 활동
+                          </span>
+                        )}
+                      </div>
+                      <div className="user-role">
+                        {userData.role === "admin" ? "👑 관리자" : "😈 빌런"}
+                      </div>
                     </div>
                   </div>
+
                   <Link to="/">
                     <Home /> 아지트
                   </Link>

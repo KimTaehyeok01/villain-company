@@ -132,43 +132,88 @@ body,
   margin-bottom: 20px;
   text-align: center;
 }
+
+/* ★★★ 사이드바 유저 정보 스타일 수정 ★★★ */
 .user-info {
-  text-align: center;
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: 15px; /* 사진과 글자 사이 간격 */
+  margin-bottom: 20px;
   background: #1a1a1d;
-  padding: 20px 10px;
+  padding: 15px;
   border-radius: 15px;
   border: 1px solid #333;
 }
+
+.user-profile-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--point-color);
+  background: #222;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-profile-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
 .user-name {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: bold;
   color: white;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  gap: 6px;
+  white-space: nowrap;
 }
+
 .checkin-badge {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: #00ff00;
   background: rgba(0, 255, 0, 0.1);
-  padding: 2px 6px;
+  padding: 2px 5px;
   border-radius: 4px;
   display: flex;
   align-items: center;
   gap: 3px;
   border: 1px solid rgba(0, 255, 0, 0.2);
 }
+
 .user-role {
   font-size: 0.75rem;
   color: #aaa;
-  background: #222;
-  padding: 4px 10px;
-  border-radius: 12px;
+  background: #27272a;
+  padding: 3px 8px;
+  border-radius: 10px;
   display: inline-block;
-  margin-top: 5px;
+  align-self: flex-start;
+  white-space: nowrap;
 }
+/* ★★★ 수정 끝 ★★★ */
+
 .sidebar a {
   color: #888;
   text-decoration: none;
@@ -1113,159 +1158,7 @@ input:checked + .slider:before {
   font-size: 0.9rem;
 }
 
-@media (max-width: 1024px) {
-  .sidebar {
-    width: 200px;
-  }
-  .dashboard-grid {
-    gap: 15px;
-  }
-  .timer-display {
-    font-size: 1.8rem;
-  }
-  .game-content-wrapper {
-    flex-direction: column;
-  }
-  .ranking-section {
-    width: 100%;
-    height: 300px;
-  }
-}
-@media (max-width: 768px) {
-  .villain-container {
-    flex-direction: column;
-    overflow-y: auto;
-  }
-  .sidebar {
-    width: 100%;
-    height: 60px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0 16px;
-    border-right: none;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: rgba(10, 10, 12, 0.95);
-    backdrop-filter: blur(10px);
-    gap: 8px;
-  }
-  .sidebar .logo {
-    font-size: 1.5rem;
-    margin-bottom: 0;
-    margin-right: auto;
-  }
-  .user-info {
-    display: none;
-  }
-  .sidebar a {
-    font-size: 0;
-    padding: 8px;
-    gap: 0;
-    border-radius: 8px;
-  }
-  .sidebar a svg {
-    width: 24px;
-    height: 24px;
-    color: #888;
-  }
-  .sidebar a:hover {
-    background: transparent;
-  }
-  .sidebar a:hover svg {
-    color: var(--point-color);
-  }
-  .logout-btn {
-    margin-top: 0;
-    font-size: 0;
-    padding: 8px;
-    margin-left: 5px;
-  }
-  .logout-btn svg {
-    width: 24px;
-    height: 24px;
-  }
-  .content {
-    padding: 20px;
-    overflow-y: visible;
-  }
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-  .header-actions {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-  }
-  .search-bar {
-    width: auto;
-    flex: 1;
-  }
-  .admin-badge,
-  .user-badge {
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-  .modal-content {
-    width: 95%;
-    padding: 20px;
-  }
-  .auth-box {
-    padding: 30px 20px;
-    width: 90%;
-  }
-  .creator-row {
-    flex-direction: column;
-  }
-  input,
-  textarea {
-    font-size: 16px !important;
-  }
-  .admin-form {
-    padding: 20px;
-    width: 100%;
-  }
-  .chat-room {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 60px);
-    border-radius: 0;
-    margin: 0;
-    border: none;
-    z-index: 50;
-  }
-  .chat-body {
-    flex: 1;
-    overflow-y: auto;
-  }
-  .chat-input-area {
-    position: sticky;
-    bottom: 0;
-    background: #18181b;
-    z-index: 10;
-    padding: 10px;
-  }
-  .game-canvas {
-    width: 100% !important;
-    height: auto !important;
-  }
-  .canvas-wrapper {
-    width: 100%;
-    max-width: 100%;
-  }
-}
+/* --- [Settings Page CSS] --- */
 .settings-container {
   width: 100%;
   max-width: 800px;
@@ -1279,6 +1172,7 @@ input:checked + .slider:before {
   gap: 30px;
 }
 
+/* 프로필 카드 디자인 */
 .profile-card {
   background: #18181b;
   border: 1px solid #333;
@@ -1411,9 +1305,77 @@ input:checked + .slider:before {
   margin: 0;
 }
 
+/* --- [프로필 사진 업로드 관련 CSS] --- */
+.avatar-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  border: 3px solid var(--point-color);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  transition: transform 0.2s;
+}
+
+.avatar-wrapper:hover {
+  transform: scale(1.05);
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.avatar-wrapper:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 768px) {
   .profile-header {
     flex-direction: column;
     text-align: center;
+  }
+  .user-info {
+    display: none;
   }
 }
