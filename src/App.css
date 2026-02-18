@@ -1266,3 +1266,154 @@ input:checked + .slider:before {
     max-width: 100%;
   }
 }
+.settings-container {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.profile-card {
+  background: #18181b;
+  border: 1px solid #333;
+  border-radius: 20px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 20px;
+}
+
+.avatar-circle {
+  width: 80px;
+  height: 80px;
+  background: var(--point-color);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+.profile-summary h3 {
+  font-size: 1.8rem;
+  margin: 0 0 5px 0;
+  color: white;
+}
+
+.role-badge {
+  background: #222;
+  color: #aaa;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  border: 1px solid #444;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-item label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.value-box {
+  background: #0a0a0c;
+  border: 1px solid #333;
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.3s;
+}
+
+.value-box.readonly {
+  background: #111;
+  color: #666;
+  border-color: #222;
+}
+
+.value-box.editing {
+  border-color: var(--point-color);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.1);
+}
+
+.value-box input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  width: 100%;
+  outline: none;
+}
+
+.uid-text {
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.edit-icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--point-color);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.edit-icon-btn:hover {
+  color: white;
+}
+
+.settings-section {
+  background: rgba(24, 24, 27, 0.5);
+  border: 1px solid #222;
+  border-radius: 15px;
+  padding: 25px;
+}
+
+.settings-section h3 {
+  margin: 0 0 10px 0;
+  color: #ccc;
+  font-size: 1.1rem;
+}
+
+.desc-text {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}

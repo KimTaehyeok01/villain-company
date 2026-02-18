@@ -13,12 +13,14 @@ import {
   Gamepad2,
   Lock,
   CheckCircle,
+  Settings,
 } from "lucide-react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import "./App.css";
 
+// 페이지 불러오기
 import CustomModal from "./components/CustomModal";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
@@ -26,6 +28,7 @@ import MainHome from "./pages/MainHome";
 import Notice from "./pages/Notice";
 import SecretBoard from "./pages/SecretBoard";
 import PingPongGame from "./pages/PingPongGame";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
   const [userData, setUserData] = useState(null);
@@ -126,6 +129,10 @@ function App() {
                   <Link to="/game">
                     <Gamepad2 /> 지옥 훈련소
                   </Link>
+                  <Link to="/settings">
+                    <Settings /> 환경 설정
+                  </Link>
+
                   <a
                     href="#"
                     onClick={handleLogoutClick}
@@ -157,6 +164,15 @@ function App() {
                     <Route
                       path="/game"
                       element={<PingPongGame userData={userData} />}
+                    />
+                    <Route
+                      path="/settings"
+                      element={
+                        <SettingsPage
+                          userData={userData}
+                          setUserData={setUserData}
+                        />
+                      }
                     />
                     <Route path="*" element={<Navigate to="/" />} />
                   </Routes>
