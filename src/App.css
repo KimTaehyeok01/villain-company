@@ -21,6 +21,7 @@ body,
   overflow: hidden;
 }
 
+/* --- [Auth / Login 스타일] --- */
 .auth-container {
   position: fixed;
   top: 0;
@@ -109,6 +110,7 @@ body,
   margin-top: 5px;
 }
 
+/* --- [메인 레이아웃] --- */
 .villain-container {
   display: flex;
   width: 100vw;
@@ -133,37 +135,37 @@ body,
   text-align: center;
 }
 
-/* ★★★ 사이드바 유저 정보 스타일 수정 ★★★ */
+/* ★★★ [사이드바 프로필 수정된 디자인] ★★★ */
 .user-info {
   display: flex;
-  align-items: center; /* 세로 중앙 정렬 */
-  gap: 15px; /* 사진과 글자 사이 간격 */
-  margin-bottom: 20px;
-  background: #1a1a1d;
-  padding: 15px;
-  border-radius: 15px;
+  align-items: center; /* 수직 중앙 정렬 */
+  gap: 16px; /* 사진과 텍스트 사이 간격 */
+  margin-bottom: 25px;
+  background: #18181b; /* 배경색을 약간 더 진하게 */
+  padding: 20px 16px; /* 내부 여백 넉넉하게 */
+  border-radius: 16px;
   border: 1px solid #333;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* 입체감 추가 */
 }
 
+/* 사진 영역 */
 .user-profile-container {
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid var(--point-color);
   background: #222;
-  flex-shrink: 0;
+  flex-shrink: 0; /* 찌그러짐 방지 */
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
 .user-profile-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .user-profile-placeholder {
   width: 100%;
   height: 100%;
@@ -173,46 +175,54 @@ body,
   align-items: center;
 }
 
+/* 텍스트 정보 (이름, 배지, 역할) */
 .user-details {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  justify-content: center;
+  gap: 6px; /* 이름줄과 역할줄 사이 간격 */
+  flex: 1;
   overflow: hidden;
 }
 
+/* 이름과 활동 배지를 한 줄로 */
 .user-name {
   font-size: 1.05rem;
-  font-weight: bold;
+  font-weight: 800; /* 더 굵게 */
   color: white;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px; /* 이름과 배지 사이 간격 */
   white-space: nowrap;
 }
 
+/* 활동 배지 디자인 */
 .checkin-badge {
-  font-size: 0.6rem;
-  color: #00ff00;
-  background: rgba(0, 255, 0, 0.1);
-  padding: 2px 5px;
-  border-radius: 4px;
+  font-size: 0.65rem;
+  color: #4ade80; /* 밝은 형광 초록 */
+  background: rgba(74, 222, 128, 0.1);
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(74, 222, 128, 0.2);
   display: flex;
   align-items: center;
   gap: 3px;
-  border: 1px solid rgba(0, 255, 0, 0.2);
+  font-weight: 600;
 }
 
+/* 역할(관리자/빌런) 디자인 */
 .user-role {
   font-size: 0.75rem;
-  color: #aaa;
+  color: #a1a1aa; /* 은은한 회색 */
   background: #27272a;
   padding: 3px 8px;
-  border-radius: 10px;
+  border-radius: 6px;
   display: inline-block;
-  align-self: flex-start;
-  white-space: nowrap;
+  align-self: flex-start; /* 왼쪽 정렬 */
+  font-weight: 500;
+  border: 1px solid #3f3f46;
 }
-/* ★★★ 수정 끝 ★★★ */
+/* ★★★ [수정 끝] ★★★ */
 
 .sidebar a {
   color: #888;
@@ -243,6 +253,7 @@ body,
   align-items: center;
 }
 
+/* --- [메인 대시보드] --- */
 .main-home-wrapper {
   width: 100%;
   max-width: 1000px;
@@ -367,6 +378,7 @@ body,
   }
 }
 
+/* --- [공지사항 페이지] --- */
 .notice-page {
   width: 100%;
   display: flex;
@@ -528,6 +540,8 @@ body,
   background: #333;
   color: #888;
 }
+
+/* --- [모달 공통] --- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -633,6 +647,7 @@ body,
   }
 }
 
+/* --- [비밀 게시판 & 채팅] --- */
 .secret-board {
   width: 100%;
   max-width: 900px;
@@ -686,7 +701,6 @@ body,
   border-radius: 8px;
   outline: none;
 }
-
 .toggle-wrapper {
   display: flex;
   align-items: center;
@@ -743,7 +757,6 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(20px);
 }
-
 .input-pwd {
   flex: 1;
   background: #0a0a0c;
@@ -933,6 +946,7 @@ input:checked + .slider:before {
   cursor: pointer;
 }
 
+/* --- [커스텀 알림 모달] --- */
 .custom-alert-overlay {
   position: fixed;
   top: 0;
@@ -1008,14 +1022,14 @@ input:checked + .slider:before {
   color: white;
 }
 
+/* --- [게임 페이지] --- */
 .game-container {
   width: 100%;
-  max-width: 1000px; /* 기존보다 넓게 설정 */
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-/* 게임 레이아웃: 좌우 분할 */
 .game-content-wrapper {
   display: flex;
   width: 100%;
@@ -1023,13 +1037,13 @@ input:checked + .slider:before {
   align-items: flex-start;
 }
 .game-section {
-  flex: 2; /* 2/3 비율 */
+  flex: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 .ranking-section {
-  flex: 1; /* 1/3 비율 */
+  flex: 1;
   background: #18181b;
   border: 1px solid #333;
   border-radius: 15px;
@@ -1099,7 +1113,6 @@ input:checked + .slider:before {
   text-align: center;
   margin-top: 20px;
 }
-
 .score-board {
   display: flex;
   justify-content: space-between;
@@ -1158,21 +1171,17 @@ input:checked + .slider:before {
   font-size: 0.9rem;
 }
 
-/* --- [Settings Page CSS] --- */
 .settings-container {
   width: 100%;
   max-width: 800px;
   display: flex;
   flex-direction: column;
 }
-
 .settings-content {
   display: flex;
   flex-direction: column;
   gap: 30px;
 }
-
-/* 프로필 카드 디자인 */
 .profile-card {
   background: #18181b;
   border: 1px solid #333;
@@ -1183,7 +1192,6 @@ input:checked + .slider:before {
   gap: 25px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
 }
-
 .profile-header {
   display: flex;
   align-items: center;
@@ -1191,7 +1199,6 @@ input:checked + .slider:before {
   border-bottom: 1px solid #333;
   padding-bottom: 20px;
 }
-
 .avatar-circle {
   width: 80px;
   height: 80px;
@@ -1202,13 +1209,11 @@ input:checked + .slider:before {
   align-items: center;
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
 }
-
 .profile-summary h3 {
   font-size: 1.8rem;
   margin: 0 0 5px 0;
   color: white;
 }
-
 .role-badge {
   background: #222;
   color: #aaa;
@@ -1218,13 +1223,11 @@ input:checked + .slider:before {
   font-weight: bold;
   border: 1px solid #444;
 }
-
 .profile-details {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
-
 .detail-item label {
   display: flex;
   align-items: center;
@@ -1233,7 +1236,6 @@ input:checked + .slider:before {
   font-size: 0.9rem;
   margin-bottom: 8px;
 }
-
 .value-box {
   background: #0a0a0c;
   border: 1px solid #333;
@@ -1246,18 +1248,15 @@ input:checked + .slider:before {
   align-items: center;
   transition: 0.3s;
 }
-
 .value-box.readonly {
   background: #111;
   color: #666;
   border-color: #222;
 }
-
 .value-box.editing {
   border-color: var(--point-color);
   box-shadow: 0 0 10px rgba(168, 85, 247, 0.1);
 }
-
 .value-box input {
   background: transparent;
   border: none;
@@ -1266,12 +1265,10 @@ input:checked + .slider:before {
   width: 100%;
   outline: none;
 }
-
 .uid-text {
   font-family: monospace;
   font-size: 0.9rem;
 }
-
 .edit-icon-btn {
   background: transparent;
   border: none;
@@ -1281,31 +1278,26 @@ input:checked + .slider:before {
   display: flex;
   align-items: center;
 }
-
 .edit-icon-btn:hover {
   color: white;
 }
-
 .settings-section {
   background: rgba(24, 24, 27, 0.5);
   border: 1px solid #222;
   border-radius: 15px;
   padding: 25px;
 }
-
 .settings-section h3 {
   margin: 0 0 10px 0;
   color: #ccc;
   font-size: 1.1rem;
 }
-
 .desc-text {
   color: #666;
   font-size: 0.9rem;
   margin: 0;
 }
 
-/* --- [프로필 사진 업로드 관련 CSS] --- */
 .avatar-wrapper {
   position: relative;
   width: 100px;
@@ -1317,17 +1309,14 @@ input:checked + .slider:before {
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
   transition: transform 0.2s;
 }
-
 .avatar-wrapper:hover {
   transform: scale(1.05);
 }
-
 .avatar-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .avatar-placeholder {
   width: 100%;
   height: 100%;
@@ -1336,7 +1325,6 @@ input:checked + .slider:before {
   justify-content: center;
   align-items: center;
 }
-
 .avatar-overlay {
   position: absolute;
   top: 0;
@@ -1350,11 +1338,9 @@ input:checked + .slider:before {
   opacity: 0;
   transition: opacity 0.3s;
 }
-
 .avatar-wrapper:hover .avatar-overlay {
   opacity: 1;
 }
-
 .spinner-small {
   width: 24px;
   height: 24px;
@@ -1363,19 +1349,167 @@ input:checked + .slider:before {
   border-top-color: #fff;
   animation: spin 1s ease-in-out infinite;
 }
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-@media (max-width: 768px) {
-  .profile-header {
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+  .dashboard-grid {
+    gap: 15px;
+  }
+  .timer-display {
+    font-size: 1.8rem;
+  }
+  .game-content-wrapper {
     flex-direction: column;
-    text-align: center;
+  }
+  .ranking-section {
+    width: 100%;
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .villain-container {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .sidebar {
+    width: 100%;
+    height: 60px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(10, 10, 12, 0.95);
+    backdrop-filter: blur(10px);
+    gap: 8px;
+  }
+  .sidebar .logo {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+    margin-right: auto;
   }
   .user-info {
     display: none;
+  }
+  .sidebar a {
+    font-size: 0;
+    padding: 8px;
+    gap: 0;
+    border-radius: 8px;
+  }
+  .sidebar a svg {
+    width: 24px;
+    height: 24px;
+    color: #888;
+  }
+  .sidebar a:hover {
+    background: transparent;
+  }
+  .sidebar a:hover svg {
+    color: var(--point-color);
+  }
+  .logout-btn {
+    margin-top: 0;
+    font-size: 0;
+    padding: 8px;
+    margin-left: 5px;
+  }
+  .logout-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+  .content {
+    padding: 20px;
+    overflow-y: visible;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .header-actions {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+  }
+  .search-bar {
+    width: auto;
+    flex: 1;
+  }
+  .admin-badge,
+  .user-badge {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+  .auth-box {
+    padding: 30px 20px;
+    width: 90%;
+  }
+  .creator-row {
+    flex-direction: column;
+  }
+  input,
+  textarea {
+    font-size: 16px !important;
+  }
+  .admin-form {
+    padding: 20px;
+    width: 100%;
+  }
+  .chat-room {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 60px);
+    border-radius: 0;
+    margin: 0;
+    border: none;
+    z-index: 50;
+  }
+  .chat-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .chat-input-area {
+    position: sticky;
+    bottom: 0;
+    background: #18181b;
+    z-index: 10;
+    padding: 10px;
+  }
+  .game-canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+  .canvas-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
   }
 }
