@@ -1343,7 +1343,7 @@ function App() {
                     <Home /> 아지트
                   </Link>
                   <Link to="/notice">
-                    <Megaphone /> 절대 문의
+                    <Megaphone /> 문의 사항
                   </Link>
                   <Link to="/board">
                     <MessageSquare /> 비밀 게시판
