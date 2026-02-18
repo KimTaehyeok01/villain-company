@@ -19,11 +19,11 @@ const SignupPage = () => {
     e.preventDefault();
     setErrorMsg("");
     if (password !== confirmPassword) {
-      setErrorMsg("비밀번호가 서로 다르다.");
+      setErrorMsg("비밀번호가 서로 일치하지 않습니다.");
       return;
     }
     if (!name.trim()) {
-      setErrorMsg("이름(활동명)을 입력해라.");
+      setErrorMsg("이름(활동명)을 입력하십시오.");
       return;
     }
     try {
@@ -47,7 +47,7 @@ const SignupPage = () => {
       setModal({
         isOpen: true,
         type: "success",
-        message: `환영한다, ${name}. 다시 로그인해라.`,
+        message: `환영합니다, ${name}. 다시 로그인하십시오.`,
         onConfirm: () => navigate("/login"),
       });
     } catch (error) {

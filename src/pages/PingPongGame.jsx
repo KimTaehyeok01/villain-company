@@ -11,7 +11,7 @@ import {
   orderBy,
   limit,
 } from "firebase/firestore";
-import { db } from "../firebase"; // 경로 주의
+import { db } from "../firebase";
 
 const PingPongGame = ({ userData }) => {
   const canvasRef = useRef(null);
@@ -24,7 +24,7 @@ const PingPongGame = ({ userData }) => {
   // 레벨 시스템
   const [level, setLevel] = useState(1);
 
-  // ★ [추가] 카운트다운 상태 (기본 0, 0보다 크면 게임 멈춤)
+  // 카운트다운 상태 (기본 0, 0보다 크면 게임 멈춤)
   const [countDown, setCountDown] = useState(0);
 
   // 공 초기 속도 (난이도 하향 유지)
@@ -70,7 +70,6 @@ const PingPongGame = ({ userData }) => {
     }
   };
 
-  // ★ [추가] 카운트다운 타이머 로직
   useEffect(() => {
     let timer;
     if (countDown > 0 && gameStarted && !gameOver) {
@@ -101,10 +100,8 @@ const PingPongGame = ({ userData }) => {
     const update = () => {
       if (!gameStarted || gameOver) return;
 
-      // 먼저 화면을 그립니다 (멈춰있는 상태라도 보여야 하니까)
       draw(ctx, canvas);
 
-      // ★ [핵심] 카운트다운 중이거나 점수 정산 중이면 물리 엔진 멈춤
       if (countDown > 0 || score.player >= 3 || score.ai >= 3) {
         animationId = requestAnimationFrame(update);
         return;
@@ -200,7 +197,7 @@ const PingPongGame = ({ userData }) => {
     }
 
     return () => cancelAnimationFrame(animationId);
-  }, [gameStarted, gameOver, score, level, countDown]); // countDown 의존성 추가
+  }, [gameStarted, gameOver, score, level, countDown]);
 
   // 승패 및 레벨업 로직
   useEffect(() => {
@@ -211,7 +208,6 @@ const PingPongGame = ({ userData }) => {
       setLevel(nextLevel);
       setScore({ player: 0, ai: 0 });
 
-      // ★ 레벨업 시 카운트다운 3초 설정
       setCountDown(3);
       resetBall(nextLevel);
     } else if (score.ai >= 3) {
@@ -287,7 +283,6 @@ const PingPongGame = ({ userData }) => {
               className="game-canvas"
             />
 
-            {/* ★ 카운트다운 오버레이 (게임 중이고 카운트다운이 0보다 클 때) */}
             {countDown > 0 && !gameOver && (
               <div
                 className="game-overlay"

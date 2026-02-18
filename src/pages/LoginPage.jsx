@@ -16,7 +16,7 @@ const LoginPage = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      setErrorMsg("이메일 혹은 비밀번호가 틀렸다.");
+      setErrorMsg("이메일 혹은 비밀번호가 틀렸습니다.");
     }
   };
   return (

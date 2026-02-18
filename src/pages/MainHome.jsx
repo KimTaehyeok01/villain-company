@@ -40,7 +40,7 @@ const MainHome = ({ userData, setUserData }) => {
       setModal({
         isOpen: true,
         type: "alert",
-        message: "오늘은 이미 생존 인증을 마쳤다. 내일 다시 보고해라.",
+        message: "오늘은 이미 생존 인증을 마쳤습니다. 내일 다시 보고하십시오.",
         onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
       });
       return;
@@ -56,14 +56,14 @@ const MainHome = ({ userData, setUserData }) => {
       setModal({
         isOpen: true,
         type: "success",
-        message: "생존 인증 완료. 활동 마크가 부여되었다.",
+        message: "생존 인증 완료. 활동 마크가 부여되었습니다.",
         onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
       });
     } catch (error) {
       setModal({
         isOpen: true,
         type: "alert",
-        message: "통신 에러. 다시 시도해라.",
+        message: "통신 에러. 다시 시도하십시오.",
         onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
       });
     }

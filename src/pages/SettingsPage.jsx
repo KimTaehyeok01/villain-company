@@ -31,7 +31,11 @@ const SettingsPage = ({ userData, setUserData }) => {
   // 이름 수정 저장
   const handleSaveName = async () => {
     if (!newName.trim()) {
-      setModal({ isOpen: true, type: "alert", message: "이름을 입력해라." });
+      setModal({
+        isOpen: true,
+        type: "alert",
+        message: "이름을 입력하십시오.",
+      });
       return;
     }
 
@@ -46,7 +50,7 @@ const SettingsPage = ({ userData, setUserData }) => {
       setModal({
         isOpen: true,
         type: "success",
-        message: "이름이 수정되었다.",
+        message: "이름이 수정 되었습니다.",
       });
     } catch (error) {
       console.error(error);
@@ -63,7 +67,7 @@ const SettingsPage = ({ userData, setUserData }) => {
       setModal({
         isOpen: true,
         type: "alert",
-        message: "이미지 파일만 가능하다.",
+        message: "이미지 파일만 가능합니다.",
       });
       return;
     }
@@ -124,7 +128,7 @@ const SettingsPage = ({ userData, setUserData }) => {
       setModal({
         isOpen: true,
         type: "success",
-        message: "기본 프로필로 초기화되었다.",
+        message: "기본 프로필로 초기화 되었습니다.",
       });
     } catch (error) {
       console.error("사진 삭제 실패:", error);
@@ -266,7 +270,7 @@ const SettingsPage = ({ userData, setUserData }) => {
 
         <div className="settings-section">
           <h3>🔐 계정 보안</h3>
-          <p className="desc-text">비밀번호 변경은 관리자에게 문의해라.</p>
+          <p className="desc-text">비밀번호 변경은 관리자에게 문의하십시오.</p>
         </div>
       </div>
     </div>
