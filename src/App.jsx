@@ -420,7 +420,7 @@ const Notice = ({ userData }) => {
       />
 
       <div className="page-header">
-        <h2>🚨 절대 문의 사항</h2>
+        <h2>🚨 문의 사항</h2>
         <div className="header-actions">
           <div className="search-bar">
             <Search size={18} color="#888" />
