@@ -8,9 +8,10 @@ import {
   Key,
   Camera,
   Trash2,
+  UserX,
 } from "lucide-react";
-import { updateProfile } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
+import { updateProfile, deleteUser } from "firebase/auth";
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import {
   ref,
   uploadBytes,
@@ -28,13 +29,12 @@ const SettingsPage = ({ userData, setUserData }) => {
 
   const fileInputRef = useRef(null);
 
-  // 이름 수정 저장
   const handleSaveName = async () => {
     if (!newName.trim()) {
       setModal({
         isOpen: true,
         type: "alert",
-        message: "이름을 입력하십시오.",
+        message: "이름을 입력해 주십시오.",
       });
       return;
     }
@@ -50,15 +50,18 @@ const SettingsPage = ({ userData, setUserData }) => {
       setModal({
         isOpen: true,
         type: "success",
-        message: "이름이 수정 되었습니다.",
+        message: "이름이 수정되었습니다.",
       });
     } catch (error) {
       console.error(error);
-      setModal({ isOpen: true, type: "alert", message: "수정 실패." });
+      setModal({
+        isOpen: true,
+        type: "alert",
+        message: "수정에 실패했습니다.",
+      });
     }
   };
 
-  // 프로필 사진 변경 (업로드)
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -90,11 +93,15 @@ const SettingsPage = ({ userData, setUserData }) => {
       setModal({
         isOpen: true,
         type: "success",
-        message: "프로필 사진 변경 완료.",
+        message: "프로필 사진이 변경되었습니다.",
       });
     } catch (error) {
       console.error("이미지 업로드 실패:", error);
-      setModal({ isOpen: true, type: "alert", message: "사진 업로드 실패." });
+      setModal({
+        isOpen: true,
+        type: "alert",
+        message: "사진 업로드에 실패했습니다.",
+      });
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -102,39 +109,79 @@ const SettingsPage = ({ userData, setUserData }) => {
   };
 
   const handleDeleteImage = async (e) => {
-    e.stopPropagation(); // 부모 클릭 이벤트(파일 선택창 열기) 방지
+    e.stopPropagation();
 
-    if (!window.confirm("기본 프로필로 돌아가겠습니까?")) return;
+    if (!window.confirm("기본 프로필로 돌아가시겠습니까?")) return;
 
     setUploading(true);
 
     try {
-      // 1. 스토리지에서 파일 삭제 (파일이 없을 수도 있으니 에러 무시)
       const storageRef = ref(storage, `profileImages/${userData.uid}`);
       await deleteObject(storageRef).catch((err) =>
         console.log("삭제할 파일 없음:", err),
       );
 
-      // 2. Auth 및 Firestore에서 photoURL 초기화 (빈 문자열)
       if (auth.currentUser) {
         await updateProfile(auth.currentUser, { photoURL: "" });
       }
       const userRef = doc(db, "users", userData.uid);
       await updateDoc(userRef, { photoURL: "" });
 
-      // 3. 상태 업데이트 (즉시 반영)
       setUserData({ ...userData, photoURL: "" });
 
       setModal({
         isOpen: true,
         type: "success",
-        message: "기본 프로필로 초기화 되었습니다.",
+        message: "기본 프로필로 초기화되었습니다.",
       });
     } catch (error) {
       console.error("사진 삭제 실패:", error);
-      setModal({ isOpen: true, type: "alert", message: "삭제 중 오류 발생." });
+      setModal({
+        isOpen: true,
+        type: "alert",
+        message: "삭제 중 오류가 발생했습니다.",
+      });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (
+      !window.confirm(
+        "정말로 계정을 탈퇴하시겠습니까? 모든 데이터가 삭제되며 복구할 수 없습니다.",
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const storageRef = ref(storage, `profileImages/${userData.uid}`);
+        await deleteObject(storageRef).catch(() => {});
+
+        const userRef = doc(db, "users", userData.uid);
+        await deleteDoc(userRef);
+
+        await deleteUser(user);
+      }
+    } catch (error) {
+      console.error("계정 탈퇴 에러:", error);
+      if (error.code === "auth/requires-recent-login") {
+        setModal({
+          isOpen: true,
+          type: "alert",
+          message:
+            "보안을 위해 로그아웃 후 다시 로그인한 뒤 탈퇴를 진행해 주십시오.",
+        });
+      } else {
+        setModal({
+          isOpen: true,
+          type: "alert",
+          message: "계정 탈퇴 중 오류가 발생했습니다.",
+        });
+      }
     }
   };
 
@@ -162,10 +209,8 @@ const SettingsPage = ({ userData, setUserData }) => {
       <div className="settings-content">
         <div className="profile-card">
           <div className="profile-header">
-            {/* 프로필 사진 영역 */}
             <div
               className="avatar-wrapper"
-              // 기본 클릭: 파일 업로드 창 열기
               onClick={() => !uploading && fileInputRef.current.click()}
             >
               {userData.photoURL ? (
@@ -180,7 +225,6 @@ const SettingsPage = ({ userData, setUserData }) => {
                 </div>
               )}
 
-              {/* 호버 시 나타나는 오버레이 */}
               <div className="avatar-overlay">
                 {uploading ? (
                   <div className="spinner-small"></div>
@@ -192,7 +236,6 @@ const SettingsPage = ({ userData, setUserData }) => {
                       gap: "15px",
                     }}
                   >
-                    {/* 카메라 아이콘 (업로드) */}
                     <Camera size={24} color="#fff" />
 
                     {userData.photoURL && (
@@ -270,7 +313,39 @@ const SettingsPage = ({ userData, setUserData }) => {
 
         <div className="settings-section">
           <h3>🔐 계정 보안</h3>
-          <p className="desc-text">비밀번호 변경은 관리자에게 문의하십시오.</p>
+          <p className="desc-text">
+            비밀번호 변경은 관리자에게 문의해 주십시오.
+          </p>
+
+          <button
+            onClick={handleDeleteAccount}
+            style={{
+              marginTop: "20px",
+              padding: "15px 20px",
+              backgroundColor: "rgba(255, 68, 68, 0.1)",
+              color: "#ff4444",
+              border: "1px solid rgba(255, 68, 68, 0.3)",
+              borderRadius: "10px",
+              cursor: "pointer",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              width: "100%",
+              transition: "all 0.2s ease",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(255, 68, 68, 0.2)";
+              e.currentTarget.style.border = "1px solid #ff4444";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(255, 68, 68, 0.1)";
+              e.currentTarget.style.border = "1px solid rgba(255, 68, 68, 0.3)";
+            }}
+          >
+            <UserX size={18} /> 계정 탈퇴
+          </button>
         </div>
       </div>
     </div>

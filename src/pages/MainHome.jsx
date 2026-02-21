@@ -6,7 +6,7 @@ import {
   Zap,
   ShieldAlert,
   Users,
-} from "lucide-react"; // 중복 제거하고 딱 한 번만 import!
+} from "lucide-react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import CustomModal from "../components/CustomModal";
@@ -60,17 +60,13 @@ const MainHome = ({ userData, setUserData }) => {
       const currentCount = userData?.attendanceCount || 0;
       const newCount = currentCount + 1;
 
-      let currentRank = "E급 (말단 쫄따구)";
-      if (newCount >= 30) currentRank = "S급 (수뇌부)";
-      else if (newCount >= 15) currentRank = "A급 (핵심 간부)";
-      else if (newCount >= 7) currentRank = "B급 (행동대장)";
-      else if (newCount >= 3) currentRank = "C급 (정규 요원)";
-
+      // Firestore에 출석 정보 업데이트
       await updateDoc(userRef, {
         lastCheckIn: todayStr,
         attendanceCount: newCount,
       });
 
+      // 로컬 상태 업데이트
       setUserData((prev) => ({
         ...prev,
         lastCheckIn: todayStr,
@@ -78,13 +74,13 @@ const MainHome = ({ userData, setUserData }) => {
       }));
 
       const time = new Date().toLocaleTimeString();
-      const newLog = `[INFO] ${userData.name} 생존 보고. 현재 랭크: ${currentRank} (${time})`;
+      const newLog = `[INFO] ${userData.name} 생존 보고 완료 (${time})`;
       setLogs((prev) => [newLog, ...prev.slice(0, 7)]);
 
       setModal({
         isOpen: true,
         type: "success",
-        message: `생존 인증 완료 (총 ${newCount}회). \n승급 심사 결과: [${currentRank}] 마크가 부여되었습니다.`,
+        message: "출석 체크가 완료되었습니다.",
         onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
       });
     } catch (error) {
@@ -117,7 +113,6 @@ const MainHome = ({ userData, setUserData }) => {
           </p>
         </div>
 
-        {/* 디스코드 스타일 멤버 목록 토글 버튼 */}
         <button
           className={`discord-member-btn ${showMembers ? "active" : ""}`}
           onClick={() => setShowMembers(!showMembers)}

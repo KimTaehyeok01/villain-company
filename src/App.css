@@ -135,7 +135,6 @@ body,
   text-align: center;
 }
 
-/* ★★★ [사이드바 프로필 수정된 디자인] ★★★ */
 .user-info {
   display: flex;
   align-items: center;
@@ -222,7 +221,6 @@ body,
   font-weight: 500;
   border: 1px solid #3f3f46;
 }
-/* ★★★ [수정 끝] ★★★ */
 
 .sidebar a {
   color: #888;
@@ -253,16 +251,14 @@ body,
   align-items: center;
 }
 
-/* --- [메인 대시보드 및 멤버 리스트 추가 스타일] --- */
 .main-home-wrapper {
   width: 100%;
-  max-width: 1200px; /* 기존 1000px에서 넓혀서 멤버목록 공간 확보 */
+  max-width: 1200px;
 }
 
-/* 헤더 영역 정렬 (디스코드 스타일 버튼 우측 배치) */
 .main-header {
   display: flex;
-  justify-content: space-between; /* 제목은 왼쪽, 버튼은 오른쪽 끝으로 밀기 */
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
   width: 100%;
@@ -1507,14 +1503,13 @@ input:checked + .slider:before {
   }
 }
 
-/* --- [반응형 미디어 쿼리 조정] --- */
 @media (max-width: 1100px) {
   .main-content-wrapper {
-    flex-direction: column; /* 태블릿 크기부터 멤버 목록이 대시보드 아래로 배치됨 */
+    flex-direction: column;
   }
   .member-list-container {
-    width: 100%; /* 아래로 떨어졌을 때 전체 너비 차지 */
-    max-height: 400px; /* 높이를 살짝 줄임 */
+    width: 100%;
+    max-height: 400px;
   }
 }
 
@@ -1598,17 +1593,15 @@ input:checked + .slider:before {
     overflow-y: visible;
   }
 
-  /* 모바일 대시보드 1열 배치 */
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
-  /* 멤버 목록도 1열에 꽉 차게 */
+
   .member-list-container {
     width: 100%;
     margin-top: 10px;
   }
 
-  /* 모바일에서도 버튼 우측 정렬 유지 */
   .main-header {
     flex-direction: row;
     align-items: center;

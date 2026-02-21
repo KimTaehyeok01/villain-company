@@ -19,6 +19,7 @@ const LoginPage = () => {
       setErrorMsg("이메일 혹은 비밀번호가 틀렸습니다.");
     }
   };
+
   return (
     <div className="auth-container fade-in">
       <div className="auth-box">
@@ -44,10 +45,34 @@ const LoginPage = () => {
             <LogIn size={18} /> 로그인
           </button>
         </form>
-        <div className="auth-footer">
-          계정이 없나?{" "}
-          <span onClick={() => navigate("/signup")} className="link-text">
+
+        <div
+          className="auth-footer"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "10px",
+            marginTop: "25px",
+          }}
+        >
+          <span style={{ color: "#666", fontSize: "0.9rem" }}>
+            계정이 없으신가요?
+          </span>
+          <span
+            onClick={() => navigate("/signup")}
+            className="link-text"
+            style={{ fontWeight: "bold" }}
+          >
             회원가입
+          </span>
+          <span style={{ color: "#444" }}>|</span>
+          <span
+            onClick={() => navigate("/find-pw")}
+            className="link-text"
+            style={{ fontWeight: "bold" }}
+          >
+            비밀번호 찾기
           </span>
         </div>
       </div>

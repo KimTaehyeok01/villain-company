@@ -25,6 +25,7 @@ import "./App.css";
 import CustomModal from "./components/CustomModal";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import FindPasswordPage from "./pages/FindPasswordPage";
 import MainHome from "./pages/MainHome";
 import Notice from "./pages/Notice";
 import SecretBoard from "./pages/SecretBoard";
@@ -85,12 +86,15 @@ function App() {
     <Router>
       <Routes>
         {!userData ? (
+          /* 로그인하지 않았을 때 접근 가능한 경로들 */
           <>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/find-pw" element={<FindPasswordPage />} />{" "}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         ) : (
+          /* 로그인했을 때 (사이드바 레이아웃 포함) */
           <Route
             path="*"
             element={
@@ -107,7 +111,6 @@ function App() {
                   <h1 className="logo">VC</h1>
 
                   <div className="user-info">
-                    {/* 사진 영역 */}
                     <div className="user-profile-container">
                       {userData.photoURL ? (
                         <img
@@ -122,7 +125,6 @@ function App() {
                       )}
                     </div>
 
-                    {/* 이름 및 역할 텍스트 영역 */}
                     <div className="user-details">
                       <div className="user-name">
                         {userData.name}

@@ -11,7 +11,7 @@ const MemberList = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+        const q = query(collection(db, "users"), orderBy("name", "asc"));
         const querySnapshot = await getDocs(q);
         const memberData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -76,7 +76,6 @@ const MemberList = () => {
                   <img
                     src={member.photoURL}
                     alt={member.name}
-                    // ★ 수정된 부분: borderRadius: "50%" 를 추가하여 사진을 동그랗게 만듦
                     style={{
                       width: "100%",
                       height: "100%",
@@ -88,7 +87,6 @@ const MemberList = () => {
                   <User size={24} color="#fff" />
                 )}
               </div>
-
               <div
                 className="member-info"
                 style={{ flex: 1, minWidth: 0, overflow: "hidden" }}
