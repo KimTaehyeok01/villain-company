@@ -1686,3 +1686,18 @@ input:checked + .slider:before {
     text-align: center;
   }
 }
+.pulse {
+  animation: pulse-effect 3.9s infinite;
+}
+
+@keyframes pulse-effect {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
