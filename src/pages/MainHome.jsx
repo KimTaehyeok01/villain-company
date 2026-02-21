@@ -48,15 +48,33 @@ const MainHome = ({ userData, setUserData }) => {
 
     try {
       const userRef = doc(db, "users", userData.uid);
-      await updateDoc(userRef, { lastCheckIn: todayStr });
-      setUserData((prev) => ({ ...prev, lastCheckIn: todayStr }));
+
+      // 기존 누적 출석 횟수 불러오기 (없으면 0에서 시작)
+      const currentCount = userData?.attendanceCount || 0;
+      const newCount = currentCount + 1;
+
+      // 출석 횟수에 따른 빌런 랭크 부여
+      let currentRank = "E급 (말단 쫄따구)";
+      if (newCount >= 30) currentRank = "S급 (수뇌부)";
+      else if (newCount >= 15) currentRank = "A급 (핵심 간부)";
+      else if (newCount >= 7) currentRank = "B급 (행동대장)";
+      else if (newCount >= 3) currentRank = "C급 (정규 요원)";
+
+      // Firebase에 날짜와 새로운 누적 횟수 함께 업데이트
+      await updateDoc(userRef, { lastCheckIn: todayStr, attendanceCount: newCount });
+      
+      // 로컬 userData 상태도 업데이트
+      setUserData((prev) => ({ ...prev, lastCheckIn: todayStr,attendanceCount: newCount}));
+
       const time = new Date().toLocaleTimeString();
-      const newLog = `[INFO] ${userData.name} 빌런 생존 보고 완료. (${time})`;
+      const newLog = `[INFO] ${userData.name} 생존 보고. 현재 랭크: ${currentRank} (${time})`;
       setLogs((prev) => [newLog, ...prev.slice(0, 7)]);
+      
+      // 모달 메시지에 랭크와 누적 횟수 표시
       setModal({
         isOpen: true,
         type: "success",
-        message: "생존 인증 완료. 활동 마크가 부여되었습니다.",
+        message: `생존 인증 완료 (총 ${newCount}회). \n승급 심사 결과: [${currentRank}] 마크가 부여되었습니다.`,
         onConfirm: () => setModal((prev) => ({ ...prev, isOpen: false })),
       });
     } catch (error) {
