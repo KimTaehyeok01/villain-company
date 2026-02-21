@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Clock, Activity, Terminal, Zap, ShieldAlert } from "lucide-react";
+import {
+  Clock,
+  Activity,
+  Terminal,
+  Zap,
+  ShieldAlert,
+  Users,
+} from "lucide-react"; // 중복 제거하고 딱 한 번만 import!
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import CustomModal from "../components/CustomModal";
+import MemberList from "../components/MemberList";
 
 const MainHome = ({ userData, setUserData }) => {
   const [timeLeft, setTimeLeft] = useState("");
@@ -17,6 +25,7 @@ const MainHome = ({ userData, setUserData }) => {
     message: "",
     onConfirm: null,
   });
+  const [showMembers, setShowMembers] = useState(false);
 
   const todayStr = new Date().toISOString().split("T")[0];
   const isCheckedIn = userData?.lastCheckIn === todayStr;
@@ -48,29 +57,30 @@ const MainHome = ({ userData, setUserData }) => {
 
     try {
       const userRef = doc(db, "users", userData.uid);
-
-      // 기존 누적 출석 횟수 불러오기 (없으면 0에서 시작)
       const currentCount = userData?.attendanceCount || 0;
       const newCount = currentCount + 1;
 
-      // 출석 횟수에 따른 빌런 랭크 부여
       let currentRank = "E급 (말단 쫄따구)";
       if (newCount >= 30) currentRank = "S급 (수뇌부)";
       else if (newCount >= 15) currentRank = "A급 (핵심 간부)";
       else if (newCount >= 7) currentRank = "B급 (행동대장)";
       else if (newCount >= 3) currentRank = "C급 (정규 요원)";
 
-      // Firebase에 날짜와 새로운 누적 횟수 함께 업데이트
-      await updateDoc(userRef, { lastCheckIn: todayStr, attendanceCount: newCount });
-      
-      // 로컬 userData 상태도 업데이트
-      setUserData((prev) => ({ ...prev, lastCheckIn: todayStr,attendanceCount: newCount}));
+      await updateDoc(userRef, {
+        lastCheckIn: todayStr,
+        attendanceCount: newCount,
+      });
+
+      setUserData((prev) => ({
+        ...prev,
+        lastCheckIn: todayStr,
+        attendanceCount: newCount,
+      }));
 
       const time = new Date().toLocaleTimeString();
       const newLog = `[INFO] ${userData.name} 생존 보고. 현재 랭크: ${currentRank} (${time})`;
       setLogs((prev) => [newLog, ...prev.slice(0, 7)]);
-      
-      // 모달 메시지에 랭크와 누적 횟수 표시
+
       setModal({
         isOpen: true,
         type: "success",
@@ -98,81 +108,101 @@ const MainHome = ({ userData, setUserData }) => {
           setModal({ ...modal, isOpen: false });
         }}
       />
+
       <div className="main-header">
-        <h2>Welcome to Villain Co.</h2>
-        <p className="status-text">
-          <span className="online-dot"></span> 8명의 빌런이 작당 모의 중...
-        </p>
+        <div className="header-titles">
+          <h2>Welcome to Villain Co.</h2>
+          <p className="status-text">
+            <span className="online-dot"></span> 8명의 빌런이 작당 모의 중...
+          </p>
+        </div>
+
+        {/* 디스코드 스타일 멤버 목록 토글 버튼 */}
+        <button
+          className={`discord-member-btn ${showMembers ? "active" : ""}`}
+          onClick={() => setShowMembers(!showMembers)}
+          title="멤버 목록 표시하기"
+        >
+          <Users size={24} color={showMembers ? "#fff" : "#888"} />
+        </button>
       </div>
-      <div className="dashboard-grid">
-        <div className="stat-card timer-card">
-          <div className="card-header">
-            <Clock size={20} color="#ff4444" />
-            <h3>세계 정복 D-DAY</h3>
-          </div>
-          <div className="timer-display">{timeLeft}</div>
-          <p className="timer-desc">성공적인 거사를 위해 역량을 결집하라.</p>
-        </div>
-        <div className="stat-card">
-          <div className="card-header">
-            <Activity size={20} color="#a855f7" />
-            <h3>핵심 리소스 현황</h3>
-          </div>
-          <div className="resource-item">
-            <div className="res-label">
-              <span>비자금 확보</span>
-              <span>85%</span>
+
+      <div className="main-content-wrapper">
+        <div className="dashboard-grid">
+          <div className="stat-card timer-card">
+            <div className="card-header">
+              <Clock size={20} color="#ff4444" />
+              <h3>세계 정복 D-DAY</h3>
             </div>
-            <div className="res-bar">
-              <div
-                className="res-progress pulse"
-                style={{ width: "85%" }}
-              ></div>
-            </div>
+            <div className="timer-display">{timeLeft}</div>
+            <p className="timer-desc">성공적인 거사를 위해 역량을 결집하라.</p>
           </div>
-          <div className="resource-item">
-            <div className="res-label">
-              <span>시민 공포 지수</span>
-              <span>62%</span>
+          <div className="stat-card">
+            <div className="card-header">
+              <Activity size={20} color="#a855f7" />
+              <h3>핵심 리소스 현황</h3>
             </div>
-            <div className="res-bar">
-              <div
-                className="res-progress orange"
-                style={{ width: "62%" }}
-              ></div>
-            </div>
-          </div>
-        </div>
-        <div className="stat-card terminal-card">
-          <div className="card-header">
-            <Terminal size={20} color="#00ff00" />
-            <h3>실시간 작전 로그</h3>
-          </div>
-          <div className="terminal-body">
-            {logs.map((log, i) => (
-              <div key={i} className="log-line">
-                {log}
+            <div className="resource-item">
+              <div className="res-label">
+                <span>비자금 확보</span>
+                <span>85%</span>
               </div>
-            ))}
+              <div className="res-bar">
+                <div
+                  className="res-progress pulse"
+                  style={{ width: "85%" }}
+                ></div>
+              </div>
+            </div>
+            <div className="resource-item">
+              <div className="res-label">
+                <span>시민 공포 지수</span>
+                <span>62%</span>
+              </div>
+              <div className="res-bar">
+                <div
+                  className="res-progress orange"
+                  style={{ width: "62%" }}
+                ></div>
+              </div>
+            </div>
+          </div>
+          <div className="stat-card terminal-card">
+            <div className="card-header">
+              <Terminal size={20} color="#00ff00" />
+              <h3>실시간 작전 로그</h3>
+            </div>
+            <div className="terminal-body">
+              {logs.map((log, i) => (
+                <div key={i} className="log-line">
+                  {log}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="stat-card report-card">
+            <div className="card-header">
+              <Zap size={20} color="#ffd700" />
+              <h3>본부 보고</h3>
+            </div>
+            <button
+              className={`report-btn ${isCheckedIn ? "done" : ""}`}
+              onClick={handleReport}
+              disabled={isCheckedIn}
+            >
+              {isCheckedIn ? "✔️ 생존 인증 완료" : "🚨 생존 신고 (REPORT)"}
+            </button>
+            <div className="security-status-info">
+              <ShieldAlert size={16} color="#ff4444" />{" "}
+              <span>보안 등급: LEVEL 4 (위험)</span>
+            </div>
           </div>
         </div>
-        <div className="stat-card report-card">
-          <div className="card-header">
-            <Zap size={20} color="#ffd700" />
-            <h3>본부 보고</h3>
+        {showMembers && (
+          <div className="member-list-container fade-in">
+            <MemberList />
           </div>
-          <button
-            className={`report-btn ${isCheckedIn ? "done" : ""}`}
-            onClick={handleReport}
-            disabled={isCheckedIn}
-          >
-            {isCheckedIn ? "✔️ 생존 인증 완료" : "🚨 생존 신고 (REPORT)"}
-          </button>
-          <div className="security-status-info">
-            <ShieldAlert size={16} color="#ff4444" />{" "}
-            <span>보안 등급: LEVEL 4 (위험)</span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

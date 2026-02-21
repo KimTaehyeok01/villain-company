@@ -138,14 +138,14 @@ body,
 /* ★★★ [사이드바 프로필 수정된 디자인] ★★★ */
 .user-info {
   display: flex;
-  align-items: center; /* 수직 중앙 정렬 */
-  gap: 16px; /* 사진과 텍스트 사이 간격 */
+  align-items: center;
+  gap: 16px;
   margin-bottom: 25px;
-  background: #18181b; /* 배경색을 약간 더 진하게 */
-  padding: 20px 16px; /* 내부 여백 넉넉하게 */
+  background: #18181b;
+  padding: 20px 16px;
   border-radius: 16px;
   border: 1px solid #333;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* 입체감 추가 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* 사진 영역 */
@@ -156,7 +156,7 @@ body,
   overflow: hidden;
   border: 2px solid var(--point-color);
   background: #222;
-  flex-shrink: 0; /* 찌그러짐 방지 */
+  flex-shrink: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -180,7 +180,7 @@ body,
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 6px; /* 이름줄과 역할줄 사이 간격 */
+  gap: 6px;
   flex: 1;
   overflow: hidden;
 }
@@ -188,18 +188,18 @@ body,
 /* 이름과 활동 배지를 한 줄로 */
 .user-name {
   font-size: 1.05rem;
-  font-weight: 800; /* 더 굵게 */
+  font-weight: 800;
   color: white;
   display: flex;
   align-items: center;
-  gap: 8px; /* 이름과 배지 사이 간격 */
+  gap: 8px;
   white-space: nowrap;
 }
 
 /* 활동 배지 디자인 */
 .checkin-badge {
   font-size: 0.65rem;
-  color: #4ade80; /* 밝은 형광 초록 */
+  color: #4ade80;
   background: rgba(74, 222, 128, 0.1);
   padding: 2px 6px;
   border-radius: 6px;
@@ -213,12 +213,12 @@ body,
 /* 역할(관리자/빌런) 디자인 */
 .user-role {
   font-size: 0.75rem;
-  color: #a1a1aa; /* 은은한 회색 */
+  color: #a1a1aa;
   background: #27272a;
   padding: 3px 8px;
   border-radius: 6px;
   display: inline-block;
-  align-self: flex-start; /* 왼쪽 정렬 */
+  align-self: flex-start;
   font-weight: 500;
   border: 1px solid #3f3f46;
 }
@@ -253,17 +253,86 @@ body,
   align-items: center;
 }
 
-/* --- [메인 대시보드] --- */
+/* --- [메인 대시보드 및 멤버 리스트 추가 스타일] --- */
 .main-home-wrapper {
   width: 100%;
-  max-width: 1000px;
+  max-width: 1200px; /* 기존 1000px에서 넓혀서 멤버목록 공간 확보 */
 }
+
+/* 헤더 영역 정렬 (디스코드 스타일 버튼 우측 배치) */
+.main-header {
+  display: flex;
+  justify-content: space-between; /* 제목은 왼쪽, 버튼은 오른쪽 끝으로 밀기 */
+  align-items: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.main-header h2 {
+  margin: 0;
+}
+
+.status-text {
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+.online-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #00ff00;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px #00ff00;
+}
+
+/* 디스코드 스타일 아이콘 버튼 */
+.discord-member-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.discord-member-btn:hover {
+  background: rgba(255, 255, 255, 0.1); /* 마우스 올리면 은은한 배경 */
+}
+
+.discord-member-btn.active {
+  background: rgba(168, 85, 247, 0.2); /* 활성화 시 보라색 배경 */
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+}
+
+/* 대시보드와 멤버 리스트를 감싸는 래퍼 */
+.main-content-wrapper {
+  display: flex;
+  gap: 25px;
+  width: 100%;
+  align-items: flex-start;
+  flex-wrap: wrap; /* 화면이 좁아지면 아래로 떨어짐 */
+}
+
 .dashboard-grid {
+  flex: 1; /* 남은 공간 차지 */
+  min-width: 320px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
-  margin-top: 30px;
 }
+
 .stat-card {
   background: rgba(24, 24, 27, 0.8);
   padding: 25px;
@@ -365,17 +434,100 @@ body,
   font-size: 0.85rem;
   color: #666;
 }
-.pulse {
-  animation: pulseAnim 2s infinite;
+
+/* --- [멤버 리스트 사이드바 영역] --- */
+.member-list-container {
+  width: 350px; /* 고정 너비 */
+  background: rgba(24, 24, 27, 0.8);
+  border: 1px solid #222;
+  border-radius: 20px;
+  padding: 25px;
+  backdrop-filter: blur(10px);
+  max-height: 550px;
+  overflow-y: auto;
 }
-@keyframes pulseAnim {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+
+.member-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+.member-list-container::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+.member-list-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 15px;
+}
+.member-list-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.member-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.member-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #111;
+  padding: 12px 15px;
+  border-radius: 12px;
+  border: 1px solid #222;
+  transition: border-color 0.2s;
+}
+.member-item:hover {
+  border-color: var(--point-color);
+}
+.member-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.member-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #222;
+  border: 1px solid #333;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.member-name {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #eee;
+}
+.member-email {
+  font-size: 0.75rem;
+  color: #888;
+}
+.member-joined-date {
+  font-size: 0.75rem;
+  color: #555;
+  white-space: nowrap;
+}
+.loading-text,
+.error-text {
+  text-align: center;
+  padding: 30px;
+  color: #aaa;
+  font-size: 0.9rem;
 }
 
 /* --- [공지사항 페이지] --- */
@@ -1355,6 +1507,17 @@ input:checked + .slider:before {
   }
 }
 
+/* --- [반응형 미디어 쿼리 조정] --- */
+@media (max-width: 1100px) {
+  .main-content-wrapper {
+    flex-direction: column; /* 태블릿 크기부터 멤버 목록이 대시보드 아래로 배치됨 */
+  }
+  .member-list-container {
+    width: 100%; /* 아래로 떨어졌을 때 전체 너비 차지 */
+    max-height: 400px; /* 높이를 살짝 줄임 */
+  }
+}
+
 @media (max-width: 1024px) {
   .sidebar {
     width: 200px;
@@ -1434,9 +1597,26 @@ input:checked + .slider:before {
     padding: 20px;
     overflow-y: visible;
   }
+
+  /* 모바일 대시보드 1열 배치 */
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
+  /* 멤버 목록도 1열에 꽉 차게 */
+  .member-list-container {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  /* 모바일에서도 버튼 우측 정렬 유지 */
+  .main-header {
+    flex-direction: row;
+    align-items: center;
+  }
+  .status-text {
+    margin-left: 0;
+  }
+
   .page-header {
     flex-direction: column;
     align-items: flex-start;
