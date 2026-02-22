@@ -139,18 +139,6 @@
     margin-right: auto;
   }
   .user-info {
-    display: flex;
-    margin-bottom: 0;
-    padding: 5px 10px;
-    border: none;
-    box-shadow: none;
-    background: transparent;
-  }
-  .user-profile-container {
-    width: 32px;
-    height: 32px;
-  }
-  .user-details {
     display: none;
   }
   .sidebar a {
