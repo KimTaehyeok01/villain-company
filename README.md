@@ -85,7 +85,7 @@ src/
 ├── pages/                  # 페이지 단위 컴포넌트 및 개별 스타일
 │   ├── LoginPage.jsx       # 로그인 페이지
 │   ├── SignupPage.jsx      # 회원가입 페이지
-│   ├── FindPasswordPage.jsx# 비밀번호 찾기 페이지
+│   ├── FindPasswordPage.jsx # 비밀번호 찾기 페이지
 │   ├── Auth.css            # 로그인/회원가입 관련 공통 스타일
 │   ├── MainHome.jsx        # 메인 대시보드
 │   ├── MainHome.css
