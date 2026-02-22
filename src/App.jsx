@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import "./App.css";
+import "./Sidebar.css";
 import {
   BrowserRouter as Router,
   Routes,

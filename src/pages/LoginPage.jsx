@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Auth.css";
 import { useNavigate } from "react-router-dom";
 import { LogIn } from "lucide-react";
 import { signInWithEmailAndPassword } from "firebase/auth";

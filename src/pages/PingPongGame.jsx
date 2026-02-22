@@ -1,3 +1,4 @@
+import "./PingPongGame.css";
 import React, { useState, useEffect, useRef } from "react";
 import { Trophy, Medal, Flame } from "lucide-react";
 import {
@@ -328,7 +329,7 @@ const PingPongGame = ({ userData }) => {
                     setLevel(1);
                     setGameOver(false);
                     setGameStarted(true);
-                    setCountDown(3); // ★ 게임 시작 시 카운트다운 3초
+                    setCountDown(3); // 게임 시작 시 카운트다운 3초
                     resetBall(1);
                   }}
                 >

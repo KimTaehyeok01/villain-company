@@ -1,3 +1,4 @@
+import "./Auth.css";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserPlus, ArrowLeft } from "lucide-react";

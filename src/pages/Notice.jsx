@@ -1,3 +1,4 @@
+import "./Notice.css";
 import React, { useState, useEffect } from "react";
 import { Search, ChevronRight, X, Send, Trash2 } from "lucide-react";
 import {

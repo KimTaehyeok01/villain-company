@@ -1,3 +1,4 @@
+import "./Settings.css";
 import React, { useState, useRef } from "react";
 import {
   User,

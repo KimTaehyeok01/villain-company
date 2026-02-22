@@ -1,0 +1,101 @@
+.auth-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+  z-index: 9999;
+}
+.auth-box {
+  background: #111;
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 0 50px rgba(168, 85, 247, 0.15);
+  text-align: center;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+.auth-box::-webkit-scrollbar {
+  width: 0;
+}
+.auth-box .logo {
+  font-size: 3rem;
+  color: var(--point-color);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 10px;
+}
+.auth-desc {
+  color: #888;
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.input-group {
+  /* SignupPage.jsx에서 사용되는 input-group 처리 */
+  width: 100%;
+}
+.auth-form input {
+  width: 100%;
+  padding: 16px;
+  background: #1a1a1d;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+}
+.auth-btn {
+  background: var(--point-color);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.login-btn-color {
+  background: var(--point-color);
+}
+.auth-footer {
+  margin-top: 25px;
+  font-size: 0.9rem;
+  color: #666;
+}
+.link-text {
+  color: var(--point-color);
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.error-text {
+  color: #ff4444;
+  font-size: 0.85rem;
+  text-align: left;
+  margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+  .auth-box {
+    padding: 30px 20px;
+    width: 90%;
+  }
+}

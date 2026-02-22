@@ -1,3 +1,4 @@
+import "./Modal.css";
 import React, { useState } from "react";
 import { AlertTriangle, CheckCircle } from "lucide-react";
 
