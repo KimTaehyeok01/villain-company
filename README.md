@@ -76,31 +76,31 @@
 
 ```bash
 src/
-├── assets/                 # 이미지 및 정적 파일
-├── components/             # 재사용 가능한 공통 컴포넌트
-│   ├── CustomModal.jsx     # 커스텀 알림/확인 모달창
-│   ├── MemberList.jsx      # 멤버 리스트 컴포넌트
+├── assets/                  # 이미지 및 정적 파일
+├── components/              # 재사용 가능한 공통 컴포넌트
+│   ├── CustomModal.jsx      # 커스텀 알림/확인 모달창
+│   ├── MemberList.jsx       # 멤버 리스트 컴포넌트
 │   ├── MemberList.css
 │   └── Modal.css
-├── pages/                  # 페이지 단위 컴포넌트 및 개별 스타일
-│   ├── LoginPage.jsx       # 로그인 페이지
-│   ├── SignupPage.jsx      # 회원가입 페이지
+├── pages/                   # 페이지 단위 컴포넌트 및 개별 스타일
+│   ├── LoginPage.jsx        # 로그인 페이지
+│   ├── SignupPage.jsx       # 회원가입 페이지
 │   ├── FindPasswordPage.jsx # 비밀번호 찾기 페이지
-│   ├── Auth.css            # 로그인/회원가입 관련 공통 스타일
-│   ├── MainHome.jsx        # 메인 대시보드
+│   ├── Auth.css             # 로그인/회원가입 관련 공통 스타일
+│   ├── MainHome.jsx         # 메인 대시보드
 │   ├── MainHome.css
-│   ├── Notice.jsx          # 문의 사항
+│   ├── Notice.jsx           # 문의 사항
 │   ├── Notice.css
-│   ├── SecretBoard.jsx     # 비밀 게시판 및 채팅방
+│   ├── SecretBoard.jsx      # 비밀 게시판 및 채팅방
 │   ├── SecretBoard.css
-│   ├── PingPongGame.jsx    # 지옥 훈련소 (핑퐁 게임)
+│   ├── PingPongGame.jsx     # 지옥 훈련소 (핑퐁 게임)
 │   ├── PingPongGame.css
-│   ├── SettingsPage.jsx    # 환경 설정 (프로필 관리 및 탈퇴)
+│   ├── SettingsPage.jsx     # 환경 설정 (프로필 관리 및 탈퇴)
 │   └── Settings.css
-├── App.jsx                 # 라우팅, 전역 상태 관리 및 메인 레이아웃(사이드바)
-├── App.css                 # 전체 공통 레이아웃 및 애니메이션
-├── Sidebar.css             # 사이드바 전용 스타일
-├── firebase.js             # Firebase 설정 및 초기화
-├── index.css               # 글로벌 기본 스타일 리셋
-└── main.jsx                # React Entry Point
+├── App.jsx                  # 라우팅, 전역 상태 관리 및 메인 레이아웃(사이드바)
+├── App.css                  # 전체 공통 레이아웃 및 애니메이션
+├── Sidebar.css              # 사이드바 전용 스타일
+├── firebase.js              # Firebase 설정 및 초기화
+├── index.css                # 글로벌 기본 스타일 리셋
+└── main.jsx                 # React Entry Point
 ```
