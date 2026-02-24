@@ -7,6 +7,8 @@ import {
   Zap,
   ShieldAlert,
   Users,
+  Trophy,
+  User,
 } from "lucide-react";
 import {
   doc,
@@ -38,6 +40,7 @@ const MainHome = ({ userData, setUserData }) => {
   });
   const [showMembers, setShowMembers] = useState(false);
   const [memberCount, setMemberCount] = useState(0);
+  const [topMembers, setTopMembers] = useState([]);
 
   const now = new Date();
   const year = now.getFullYear();
@@ -51,6 +54,27 @@ const MainHome = ({ userData, setUserData }) => {
     const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
       setMemberCount(snapshot.size);
     });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const q = query(collection(db, "users"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const membersData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const sortedMembers = membersData.sort((a, b) => {
+        const countA = a.attendanceCount || 0;
+        const countB = b.attendanceCount || 0;
+        return countB - countA;
+      });
+
+      setTopMembers(sortedMembers.slice(0, 10));
+    });
+
     return () => unsubscribe();
   }, []);
 
@@ -137,6 +161,13 @@ const MainHome = ({ userData, setUserData }) => {
     }
   };
 
+  const getRankStyle = (index) => {
+    if (index === 0) return { color: "#ffd700", textShadow: "0 0 10px rgba(255, 215, 0, 0.5)", fontWeight: "bold", fontSize: "1.1rem", width: "20px", textAlign: "center" };
+    if (index === 1) return { color: "#c0c0c0", textShadow: "0 0 10px rgba(192, 192, 192, 0.5)", fontWeight: "bold", fontSize: "1.1rem", width: "20px", textAlign: "center" };
+    if (index === 2) return { color: "#cd7f32", textShadow: "0 0 10px rgba(205, 127, 50, 0.5)", fontWeight: "bold", fontSize: "1.1rem", width: "20px", textAlign: "center" };
+    return { color: "#888", fontWeight: "bold", fontSize: "1rem", width: "20px", textAlign: "center" };
+  };
+ 
   return (
     <div className="fade-in main-home-wrapper">
       <CustomModal
@@ -235,6 +266,35 @@ const MainHome = ({ userData, setUserData }) => {
             <div className="security-status-info">
               <ShieldAlert size={16} color="#ff4444" />{" "}
               <span>보안 등급: LEVEL 4 (위험)</span>
+            </div>
+          </div>
+          <div className="stat-card">
+            <div className="card-header">
+              <Trophy size={20} color="#ffd700" /> 
+              <h3>출석 랭킹 (Top 10)</h3>
+            </div>
+            <div className="ranking-list">
+              {topMembers.length === 0 ? (
+                <div className="ranking-empty">
+                  요원 데이터를 불러오는 중...
+                </div>
+              ) : (
+                topMembers.map((member, index) => (
+                  <div key={member.id} className="ranking-item">
+                    <div className="ranking-info">
+                      <span style={getRankStyle(index)}>{index + 1}</span>
+                      <User color={index < 3 ? "white" : "#888"} size={14} />
+                      <span className={`ranking-name ${index < 3 ? "top-rank" : ""}`}>
+                        {member.name || "익명의 악당"}
+                      </span>
+                    </div>
+
+                    <div className="ranking-badge">
+                      {member.attendanceCount || 0}회
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

@@ -165,6 +165,55 @@
   font-size: 0.85rem;
   color: #666;
 }
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+.ranking-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+.ranking-empty {
+  color: #888;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 0.9rem;
+}
+.ranking-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.ranking-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ranking-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.ranking-name.top-rank {
+  color: white;
+}
+.ranking-badge {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
 
 @media (max-width: 1100px) {
   .main-content-wrapper {
